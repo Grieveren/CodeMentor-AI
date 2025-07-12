@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+coverage/
+.next/
+.nuxt/
+.git/
+*.min.js
+*.bundle.js
+package-lock.json
+yarn.lock
+*.log
