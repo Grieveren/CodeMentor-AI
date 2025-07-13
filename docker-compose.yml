@@ -1,0 +1,138 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: codementor-postgres
+    environment:
+      POSTGRES_DB: codementor
+      POSTGRES_USER: codementor
+      POSTGRES_PASSWORD: codementor_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - codementor-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U codementor -d codementor"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: codementor-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - codementor-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  code-runner:
+    build:
+      context: .
+      dockerfile: docker/code-runner/Dockerfile
+      target: ${NODE_ENV:-development}
+    container_name: codementor-code-runner
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - REDIS_URL=redis://redis:6379
+      - POSTGRES_URL=postgresql://codementor:codementor_password@postgres:5432/codementor
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./code-runner:/app
+      - /app/node_modules
+    networks:
+      - codementor-network
+    restart: unless-stopped
+
+  code-executor:
+    build:
+      context: ./server/code-executor
+      dockerfile: Dockerfile
+    container_name: codementor-code-executor
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - POSTGRES_URL=postgresql://codementor:codementor_password@postgres:5432/codementor
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - codementor-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  server:
+    build:
+      context: .
+      dockerfile: docker/server/Dockerfile
+      target: ${NODE_ENV:-development}
+    container_name: codementor-server
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=3001
+      - REDIS_URL=redis://redis:6379
+      - POSTGRES_URL=postgresql://codementor:codementor_password@postgres:5432/codementor
+      - CODE_RUNNER_URL=http://code-runner:3002
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      code-runner:
+        condition: service_started
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    networks:
+      - codementor-network
+    restart: unless-stopped
+
+  client:
+    build:
+      context: .
+      dockerfile: docker/client/Dockerfile
+      target: ${NODE_ENV:-development}
+    container_name: codementor-client
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - VITE_API_URL=http://localhost:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    networks:
+      - codementor-network
+    restart: unless-stopped
+
+networks:
+  codementor-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:

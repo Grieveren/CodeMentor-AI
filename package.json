@@ -2,16 +2,26 @@
   "name": "codementor-ai",
   "version": "1.0.0",
   "description": "A comprehensive AI-powered coding mentor platform",
-  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
-    "dev": "echo 'Development server not configured yet'",
-    "build": "echo 'Build process not configured yet'",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "dev": "pnpm run --parallel dev",
+    "dev:client": "pnpm --filter @codementor-ai/client dev",
+    "dev:server": "pnpm --filter @codementor-ai/server dev",
+    "build": "pnpm run --recursive build",
+    "build:client": "pnpm --filter @codementor-ai/client build",
+    "build:server": "pnpm --filter @codementor-ai/server build",
+    "test": "pnpm run --recursive test",
+    "test:watch": "pnpm run --recursive test:watch",
+    "lint": "pnpm run --recursive lint",
+    "lint:fix": "pnpm run --recursive lint:fix",
+    "format": "pnpm run --recursive format",
+    "format:check": "pnpm run --recursive format:check",
+    "type-check": "pnpm run --recursive type-check",
+    "clean": "pnpm run --recursive clean",
     "prepare": "husky install"
   },
   "keywords": [
@@ -25,8 +35,8 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.0.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
@@ -47,7 +57,11 @@
     ]
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "dependencies": {
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^4.6.2"
   }
 }

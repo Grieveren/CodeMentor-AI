@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package executor;
+
+option go_package = "code-executor/proto";
+
+// Code execution request
+message ExecuteRequest {
+    string language = 1;        // Programming language (python, javascript, go, etc.)
+    string code = 2;            // Code to execute
+    string input = 3;           // Optional stdin input
+    int32 timeout_seconds = 4;  // Execution timeout (default: 30s)
+    int64 memory_limit_mb = 5;  // Memory limit in MB (default: 128MB)
+    double cpu_limit = 6;       // CPU limit as fraction (default: 0.5)
+}
+
+// Code execution response
+message ExecuteResponse {
+    string stdout = 1;          // Standard output
+    string stderr = 2;          // Standard error
+    int32 exit_code = 3;        // Exit code
+    bool timeout = 4;           // Whether execution timed out
+    bool memory_exceeded = 5;   // Whether memory limit was exceeded
+    int64 execution_time_ms = 6; // Execution time in milliseconds
+    int64 memory_used_mb = 7;   // Memory used in MB
+}
+
+// Health check request
+message HealthRequest {}
+
+// Health check response
+message HealthResponse {
+    string status = 1;          // Status of the service
+    string version = 2;         // Service version
+}
+
+// Code execution service
+service CodeExecutor {
+    rpc Execute(ExecuteRequest) returns (ExecuteResponse);
+    rpc Health(HealthRequest) returns (HealthResponse);
+}

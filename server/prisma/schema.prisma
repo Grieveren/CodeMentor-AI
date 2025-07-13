@@ -1,0 +1,279 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and profile management
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  name      String?
+  avatar    String?
+  role      UserRole @default(STUDENT)
+  
+  // Authentication fields
+  passwordHash String?
+  emailVerified Boolean @default(false)
+  refreshToken String?
+  refreshTokenExpiry DateTime?
+  
+  // Profile fields
+  bio          String?
+  githubUrl    String?
+  linkedinUrl  String?
+  portfolioUrl String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  progress     Progress[]
+  submissions  Submission[]
+  chatHistory  ChatHistory[]
+  
+  @@map("users")
+}
+
+// Learning tracks (e.g., "Web Development", "Data Science")
+model Track {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  slug        String @unique
+  difficulty  DifficultyLevel
+  
+  // Metadata
+  imageUrl    String?
+  tags        String[]
+  isPublished Boolean @default(false)
+  
+  // Ordering
+  order       Int @default(0)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  lessons  Lesson[]
+  progress Progress[]
+  
+  @@map("tracks")
+}
+
+// Individual lessons within tracks
+model Lesson {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  slug        String @unique
+  content     String // Rich text content (markdown/HTML)
+  
+  // Lesson metadata
+  difficulty    DifficultyLevel
+  estimatedTime Int // in minutes
+  
+  // Media
+  videoUrl   String?
+  imageUrl   String?
+  
+  // Ordering within track
+  order      Int @default(0)
+  
+  // Publishing
+  isPublished Boolean @default(false)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  track       Track       @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  trackId     String
+  challenges  Challenge[]
+  progress    Progress[]
+  
+  @@map("lessons")
+}
+
+// Coding challenges within lessons
+model Challenge {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  
+  // Challenge content
+  instructions String // Detailed instructions
+  startingCode String // Initial code template
+  solution     String // Expected solution
+  
+  // Test cases
+  testCases   Json // Array of test cases with input/output
+  
+  // Challenge metadata
+  difficulty  DifficultyLevel
+  language    ProgrammingLanguage
+  tags        String[]
+  
+  // Hints and tips
+  hints       String[]
+  
+  // Ordering within lesson
+  order       Int @default(0)
+  
+  // Publishing
+  isPublished Boolean @default(false)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  lesson      Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId    String
+  submissions Submission[]
+  
+  @@map("challenges")
+}
+
+// User submissions for challenges
+model Submission {
+  id        String @id @default(cuid())
+  code      String
+  language  ProgrammingLanguage
+  status    SubmissionStatus @default(PENDING)
+  
+  // Execution results
+  output       String?
+  error        String?
+  executionTime Int? // in milliseconds
+  memoryUsage   Int? // in bytes
+  
+  // Test results
+  testResults Json? // Results of running test cases
+  score       Float? // Score out of 100
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  challengeId String
+  
+  @@map("submissions")
+}
+
+// User progress tracking
+model Progress {
+  id String @id @default(cuid())
+  
+  // Progress state
+  status      ProgressStatus @default(NOT_STARTED)
+  score       Float? // Score out of 100
+  timeSpent   Int @default(0) // in minutes
+  
+  // Completion tracking
+  startedAt   DateTime?
+  completedAt DateTime?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  track    Track?  @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  trackId  String?
+  lesson   Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId String?
+  
+  // Ensure user can only have one progress record per track/lesson
+  @@unique([userId, trackId])
+  @@unique([userId, lessonId])
+  @@map("progress")
+}
+
+// AI chat history for mentoring
+model ChatHistory {
+  id      String @id @default(cuid())
+  message String
+  role    ChatRole // USER or ASSISTANT
+  
+  // Context
+  context Json? // Additional context like code snippets, lesson info
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  
+  @@map("chat_history")
+}
+
+// Enums
+enum UserRole {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum ProgrammingLanguage {
+  JAVASCRIPT
+  TYPESCRIPT
+  PYTHON
+  JAVA
+  CPP
+  CSHARP
+  GO
+  RUST
+  PHP
+  RUBY
+  SWIFT
+  KOTLIN
+}
+
+enum SubmissionStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  TIMEOUT
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  PAUSED
+}
+
+enum ChatRole {
+  USER
+  ASSISTANT
+}

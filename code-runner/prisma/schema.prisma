@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Reference the main schema from the server
+// This is a simplified version for the code-runner service
+model Challenge {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  
+  // Challenge content
+  instructions String // Detailed instructions
+  startingCode String // Initial code template
+  solution     String // Expected solution
+  
+  // Test cases
+  testCases   Json // Array of test cases with input/output
+  
+  // Challenge metadata
+  difficulty  String // DifficultyLevel
+  language    String // ProgrammingLanguage
+  tags        String[]
+  
+  // Publishing
+  isPublished Boolean @default(false)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  lessonId    String
+  submissions Submission[]
+  
+  @@map("challenges")
+}
+
+// User submissions for challenges
+model Submission {
+  id        String @id @default(cuid())
+  code      String
+  language  String // ProgrammingLanguage
+  status    String @default("PENDING") // SubmissionStatus
+  
+  // Execution results
+  output       String?
+  error        String?
+  executionTime Int? // in milliseconds
+  memoryUsage   Int? // in bytes
+  
+  // Test results
+  testResults Json? // Results of running test cases
+  score       Float? // Score out of 100
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  userId      String
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  challengeId String
+  
+  @@map("submissions")
+}

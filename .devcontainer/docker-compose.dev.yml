@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  devcontainer:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - ..:/workspace:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+      - node_modules:/workspace/node_modules
+      - client_node_modules:/workspace/client/node_modules
+      - server_node_modules:/workspace/server/node_modules
+      - code_runner_node_modules:/workspace/code-runner/node_modules
+    environment:
+      - NODE_ENV=development
+      - POSTGRES_URL=postgresql://codementor:codementor_password@postgres:5432/codementor
+      - REDIS_URL=redis://redis:6379
+    networks:
+      - codementor-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # Keep container running for development
+    command: sleep infinity
+
+  # Override services for development
+  client:
+    volumes:
+      - ../client:/app/client:cached
+      - client_node_modules:/app/client/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:3001
+      - CHOKIDAR_USEPOLLING=true
+    stdin_open: true
+    tty: true
+
+  server:
+    volumes:
+      - ../server:/app/server:cached
+      - server_node_modules:/app/server/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - REDIS_URL=redis://redis:6379
+      - POSTGRES_URL=postgresql://codementor:codementor_password@postgres:5432/codementor
+      - CODE_RUNNER_URL=http://code-runner:3002
+    stdin_open: true
+    tty: true
+
+  code-runner:
+    volumes:
+      - ../code-runner:/app/code-runner:cached
+      - code_runner_node_modules:/app/code-runner/node_modules
+    environment:
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis:6379
+      - POSTGRES_URL=postgresql://codementor:codementor_password@postgres:5432/codementor
+    stdin_open: true
+    tty: true
+
+volumes:
+  node_modules:
+  client_node_modules:
+  server_node_modules:
+  code_runner_node_modules:

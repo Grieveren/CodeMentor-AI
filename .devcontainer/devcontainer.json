@@ -1,0 +1,125 @@
+{
+  "name": "CodeMentor AI Development Environment",
+  "dockerComposeFile": ["../docker-compose.yml", "docker-compose.dev.yml"],
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "postCreateCommand": "pnpm install",
+  "postStartCommand": "pnpm run dev:services",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // TypeScript & JavaScript
+        "ms-vscode.vscode-typescript-next",
+        "bradlc.vscode-tailwindcss",
+        "ms-vscode.vscode-json",
+        
+        // React
+        "dsznajder.es7-react-js-snippets",
+        "formulahendry.auto-rename-tag",
+        
+        // Code Quality
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ms-vscode.vscode-typescript-next",
+        
+        // Git
+        "eamodio.gitlens",
+        "github.vscode-pull-request-github",
+        
+        // Docker
+        "ms-azuretools.vscode-docker",
+        
+        // Database
+        "ms-mssql.mssql",
+        
+        // Testing
+        "ms-vscode.test-adapter-converter",
+        "hbenl.vscode-test-explorer",
+        
+        // Productivity
+        "ms-vscode.vscode-thunder-client",
+        "humao.rest-client",
+        "ms-vsliveshare.vsliveshare",
+        
+        // Themes & UI
+        "github.github-vscode-theme",
+        "pkief.material-icon-theme",
+        
+        // Markdown
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint"
+      ],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": true,
+          "source.organizeImports": true
+        },
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "typescript.suggest.autoImports": true,
+        "javascript.suggest.autoImports": true,
+        "eslint.workingDirectories": [
+          "./client",
+          "./server", 
+          "./code-runner"
+        ],
+        "files.exclude": {
+          "**/node_modules": true,
+          "**/dist": true,
+          "**/.git": true,
+          "**/.DS_Store": true,
+          "**/Thumbs.db": true
+        },
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/dist": true,
+          "**/.git": true,
+          "**/coverage": true
+        },
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "/bin/bash"
+          }
+        },
+        "docker.defaultRegistryPath": "localhost:5000",
+        "remote.containers.defaultExtensions": [
+          "ms-vscode.vscode-typescript-next",
+          "esbenp.prettier-vscode",
+          "dbaeumer.vscode-eslint"
+        ]
+      }
+    }
+  },
+  "forwardPorts": [3000, 3001, 3002, 5432, 6379],
+  "portsAttributes": {
+    "3000": {
+      "label": "Client (React)",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "Server (API)",
+      "onAutoForward": "notify"
+    },
+    "3002": {
+      "label": "Code Runner",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "ignore"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "ignore"
+    }
+  },
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "remoteUser": "node",
+  "containerUser": "node",
+  "updateRemoteUserUID": true
+}
