@@ -7,13 +7,11 @@ export default {
       useESM: true,
     },
   },
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
-  testMatch: [
-    '**/__tests__/**/*.test.ts',
-    '**/?(*.)+(spec|test).ts',
-  ],
+  testMatch: ['**/__tests__/**/*.test.ts', '**/?(*.)+(spec|test).ts'],
+  passWithNoTests: true,
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
