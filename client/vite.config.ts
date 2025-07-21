@@ -5,6 +5,7 @@ import { fileURLToPath, URL } from 'node:url';
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   // Load env file based on `mode` in the current working directory.
+  // eslint-disable-next-line no-undef
   const env = loadEnv(mode, process.cwd(), '');
   
   return {
@@ -31,6 +32,7 @@ export default defineConfig(({ command, mode }) => {
     
     // Environment variables
     define: {
+      // eslint-disable-next-line no-undef
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
     },
@@ -81,6 +83,9 @@ export default defineConfig(({ command, mode }) => {
             
             // Code editor (large dependency)
             monaco: ['@monaco-editor/react'],
+            
+            // Markdown processing for specifications
+            markdown: ['unified', 'remark', 'remark-parse', 'remark-stringify', 'remark-frontmatter', 'remark-gfm'],
             
             // Charts
             charts: ['recharts'],
@@ -137,6 +142,10 @@ export default defineConfig(({ command, mode }) => {
       ],
       exclude: [
         '@monaco-editor/react', // Large dependency, load on demand
+        'unified', // Markdown processing, load on demand for specification editing
+        'remark',
+        'remark-parse',
+        'remark-stringify',
       ],
     },
     

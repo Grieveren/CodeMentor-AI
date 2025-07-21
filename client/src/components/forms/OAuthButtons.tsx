@@ -44,7 +44,6 @@ interface OAuthButtonsProps {
 export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
   disabled = false,
   onOAuthStart,
-  onOAuthSuccess,
   onOAuthError,
 }) => {
   const handleOAuthLogin = (provider: 'github' | 'google') => {
@@ -55,22 +54,22 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
       let oauthUrl: string;
       
       if (provider === 'github') {
-        if (!config.githubClientId) {
+        if (!config.auth.githubClientId) {
           throw new Error('GitHub OAuth is not configured');
         }
         const params = new URLSearchParams({
-          client_id: config.githubClientId,
+          client_id: config.auth.githubClientId,
           redirect_uri: `${window.location.origin}/auth/callback/github`,
           scope: 'user:email',
           state: generateRandomState(),
         });
         oauthUrl = `https://github.com/login/oauth/authorize?${params}`;
       } else {
-        if (!config.googleClientId) {
+        if (!config.auth.googleClientId) {
           throw new Error('Google OAuth is not configured');
         }
         const params = new URLSearchParams({
-          client_id: config.googleClientId,
+          client_id: config.auth.googleClientId,
           redirect_uri: `${window.location.origin}/auth/callback/google`,
           response_type: 'code',
           scope: 'openid email profile',
@@ -113,7 +112,7 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
           type="button"
           variant="outline"
           onClick={() => handleOAuthLogin('github')}
-          disabled={disabled || !config.githubClientId}
+          disabled={disabled || !config.auth.githubClientId}
           leftIcon={<GitHubIcon />}
           className="justify-center"
         >
@@ -125,7 +124,7 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
           type="button"
           variant="outline"
           onClick={() => handleOAuthLogin('google')}
-          disabled={disabled || !config.googleClientId}
+          disabled={disabled || !config.auth.googleClientId}
           leftIcon={<GoogleIcon />}
           className="justify-center"
         >
@@ -134,16 +133,16 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
       </div>
 
       {/* OAuth Configuration Warning (Development Only) */}
-      {config.environment === 'development' && 
-       (!config.githubClientId || !config.googleClientId) && (
+      {config.app.environment === 'development' && 
+       (!config.auth.githubClientId || !config.auth.googleClientId) && (
         <div className="text-xs text-gray-500 text-center mt-2">
-          {!config.githubClientId && !config.googleClientId && (
+          {!config.auth.githubClientId && !config.auth.googleClientId && (
             'OAuth providers not configured. Set VITE_GITHUB_CLIENT_ID and VITE_GOOGLE_CLIENT_ID.'
           )}
-          {!config.githubClientId && config.googleClientId && (
+          {!config.auth.githubClientId && config.auth.googleClientId && (
             'GitHub OAuth not configured. Set VITE_GITHUB_CLIENT_ID.'
           )}
-          {config.githubClientId && !config.googleClientId && (
+          {config.auth.githubClientId && !config.auth.googleClientId && (
             'Google OAuth not configured. Set VITE_GOOGLE_CLIENT_ID.'
           )}
         </div>

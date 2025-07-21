@@ -25,8 +25,8 @@ class ApiClient {
   constructor() {
     this.retryConfig = DEFAULT_RETRY_CONFIG;
     this.axiosInstance = axios.create({
-      baseURL: appConfig.apiBaseUrl,
-      timeout: appConfig.apiTimeout,
+      baseURL: appConfig.api.baseUrl,
+      timeout: appConfig.api.timeout,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -46,7 +46,7 @@ class ApiClient {
         }
 
         // Log request in development
-        if (appConfig.enableDebug) {
+        if (appConfig.features.debug) {
           console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
             headers: config.headers,
             data: config.data,
@@ -65,7 +65,7 @@ class ApiClient {
     this.axiosInstance.interceptors.response.use(
       (response: AxiosResponse) => {
         // Log response in development
-        if (appConfig.enableDebug) {
+        if (appConfig.features.debug) {
           console.log(`[API Response] ${response.status} ${response.config.url}`, {
             data: response.data,
           });
@@ -77,7 +77,7 @@ class ApiClient {
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
         // Log error in development
-        if (appConfig.enableDebug) {
+        if (appConfig.features.debug) {
           console.error(`[API Error] ${error.response?.status} ${originalRequest?.url}`, {
             error: error.response?.data,
             message: error.message,
@@ -143,7 +143,7 @@ class ApiClient {
         throw new Error('No refresh token available');
       }
 
-      const response = await axios.post(`${appConfig.apiBaseUrl}/api/auth/refresh`, {
+      const response = await axios.post(`${appConfig.api.baseUrl}/api/auth/refresh`, {
         refreshToken,
       });
 

@@ -1,0 +1,30 @@
+{
+  "enabled": true,
+  "name": "Documentation Sync",
+  "description": "Listens to all TypeScript, JavaScript, Go, and configuration files in the repository and automatically updates documentation in README.md and /docs folder when source code changes",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx",
+      "**/*.go",
+      "**/*.json",
+      "**/*.md",
+      "**/*.prisma",
+      "**/*.proto",
+      "package.json",
+      "tsconfig.json",
+      "docker-compose.yml",
+      "Dockerfile",
+      "*.config.js",
+      "*.config.ts"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Source code files have been modified in this TypeScript/JavaScript/Go repository. Please review the changes and update the documentation accordingly. Focus on:\n\n1. Update the main README.md if there are significant architectural changes, new features, or API modifications\n2. Update relevant documentation in the /docs folder for detailed technical documentation\n3. Update any service-specific README files (like client/README.md, server/README.md, etc.) if changes affect those specific components\n4. Ensure documentation reflects current functionality, API endpoints, configuration options, and usage examples\n5. Update any implementation summaries or technical documentation that may be outdated\n\nPlease analyze the changed files and determine what documentation updates are needed to keep everything current and accurate."
+  }
+}
