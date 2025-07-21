@@ -2,24 +2,26 @@
 
 ## Overview
 
-The CodeMentor AI frontend will be a modern, responsive React application that provides a comprehensive user interface for the AI-powered coding mentor platform. The design leverages the existing robust backend infrastructure and focuses on creating an intuitive, performant user experience that seamlessly integrates with all backend services including authentication, lesson management, code execution, AI tutoring, and progress tracking.
+The CodeMentor AI platform will be redesigned as a comprehensive specification-based development learning system. The application will teach developers the complete workflow of spec-driven development, from requirements gathering through design documentation to implementation planning. The platform combines interactive lessons, AI-powered feedback, collaborative tools, and practical exercises to provide hands-on experience with specification-based development methodology, following the principles outlined in Kiro's getting started documentation.
 
 ## Architecture
 
 ### Technology Stack
 
-- **Framework**: React 18 with TypeScript
+- **Framework**: React 18 with TypeScript for type-safe component development
 - **Build Tool**: Vite for fast development and optimized builds
 - **Styling**: Tailwind CSS for utility-first styling and responsive design
 - **State Management**: Zustand for lightweight, scalable state management
 - **Routing**: React Router v6 for client-side navigation
-- **Code Editor**: Monaco Editor for advanced code editing capabilities
+- **Document Editor**: Monaco Editor for specification document editing with markdown support
 - **HTTP Client**: Axios with interceptors for API communication
-- **WebSocket**: Socket.IO client for real-time AI chat
-- **Form Handling**: React Hook Form with Zod validation
+- **Real-time Collaboration**: Socket.IO client for collaborative document editing
+- **Form Handling**: React Hook Form with Zod validation for specification forms
 - **UI Components**: Headless UI for accessible, unstyled components
 - **Icons**: Heroicons for consistent iconography
-- **Charts**: Recharts for progress visualization
+- **Charts**: Recharts for progress visualization and methodology metrics
+- **Markdown Processing**: Unified/Remark for specification document rendering
+- **Diff Visualization**: Monaco Diff Editor for specification version comparison
 
 ### Application Structure
 
@@ -28,14 +30,17 @@ client/src/
 ├── components/           # Reusable UI components
 │   ├── ui/              # Basic UI components (Button, Input, etc.)
 │   ├── layout/          # Layout components (Header, Sidebar, etc.)
-│   ├── forms/           # Form components
-│   └── charts/          # Chart components
+│   ├── specifications/ # Specification document components
+│   ├── collaboration/  # Real-time collaboration components
+│   ├── templates/      # Specification template components
+│   └── charts/         # Progress and metrics visualization
 ├── pages/               # Page components
 │   ├── auth/            # Authentication pages
-│   ├── dashboard/       # Dashboard and overview
-│   ├── lessons/         # Lesson browsing and viewing
-│   ├── editor/          # Code editor and challenges
-│   ├── chat/            # AI chat interface
+│   ├── dashboard/       # Learning progress dashboard
+│   ├── lessons/         # Specification methodology lessons
+│   ├── projects/        # Specification project workspace
+│   ├── templates/       # Template library and examples
+│   ├── collaboration/   # Team collaboration features
 │   └── profile/         # User profile and settings
 ├── hooks/               # Custom React hooks
 ├── services/            # API service layer
@@ -50,151 +55,160 @@ client/src/
 ### Core Layout Components
 
 #### AppLayout
-- **Purpose**: Main application wrapper with navigation and routing
-- **Features**: Responsive sidebar, header with user menu, breadcrumbs
-- **State**: Authentication status, current route, sidebar collapse state
+- **Purpose**: Main application wrapper with navigation optimized for specification-based development workflow
+- **Features**: Responsive sidebar with methodology phases, header with project context, breadcrumbs showing spec progression
+- **State**: Authentication status, current project, active specification phase, collaboration status
 
-#### Navigation
-- **Purpose**: Primary navigation with role-based menu items
-- **Features**: Collapsible sidebar, active route highlighting, user role adaptation
-- **Integration**: Authentication store for role-based rendering
+#### SpecificationNavigation
+- **Purpose**: Navigation tailored to specification-based development phases
+- **Features**: Phase-based navigation (Requirements → Design → Tasks → Implementation), progress indicators, phase validation status
+- **Integration**: Specification store for phase completion tracking, user permissions for phase access
 
-### Authentication Components
+### Specification Document Components
 
-#### LoginForm
-- **Purpose**: User authentication with email/password and OAuth options
-- **Features**: Form validation, loading states, error handling
-- **Integration**: Auth service for login, OAuth providers (GitHub/Google)
+#### RequirementsEditor
+- **Purpose**: Guided editor for creating requirements documents using EARS format
+- **Features**: Template-based editing, EARS format validation, user story templates, acceptance criteria builder
+- **Integration**: AI service for requirements review, template library, real-time collaboration
 
-#### RegisterForm
-- **Purpose**: New user registration with validation
-- **Features**: Password strength validation, email verification flow
-- **Integration**: Auth service for registration, form validation with Zod
+#### DesignDocumentEditor
+- **Purpose**: Structured editor for creating comprehensive design documents
+- **Features**: Section templates (Architecture, Components, Data Models), diagram integration, design pattern suggestions
+- **Integration**: AI service for design feedback, architecture template library, component relationship visualization
 
-#### ProtectedRoute
-- **Purpose**: Route protection based on authentication status
-- **Features**: Redirect to login, preserve intended destination
-- **Integration**: Authentication store, React Router
+#### TaskBreakdownEditor
+- **Purpose**: Interactive editor for creating implementation task lists
+- **Features**: Task hierarchy management, dependency tracking, effort estimation, requirement traceability
+- **Integration**: Requirements and design documents for context, AI service for task optimization
 
-### Lesson Management Components
+### Methodology Learning Components
 
-#### LessonBrowser
-- **Purpose**: Browse and filter available lessons and tracks
-- **Features**: Category filtering, difficulty sorting, search functionality
-- **Integration**: Lessons API, progress tracking for completion status
+#### SpecificationLessonBrowser
+- **Purpose**: Browse lessons focused on specification-based development methodology
+- **Features**: Methodology phase filtering, skill level progression, interactive lesson previews
+- **Integration**: Lessons API with specification-focused content, progress tracking for methodology mastery
 
-#### LessonViewer
-- **Purpose**: Display lesson content with navigation and progress tracking
-- **Features**: Rich content rendering, progress indicators, navigation controls
-- **Integration**: Lessons API, progress API for tracking completion
+#### MethodologyLessonViewer
+- **Purpose**: Interactive lessons teaching specification-based development principles
+- **Features**: Step-by-step methodology guidance, interactive exercises, real-world examples, practice templates
+- **Integration**: Specification templates, AI tutoring for methodology questions, progress tracking
 
-#### TrackOverview
-- **Purpose**: Display learning track information and lesson progression
-- **Features**: Track metadata, lesson list with completion status, estimated time
-- **Integration**: Lessons API, progress API for user-specific data
+#### SpecificationWorkshop
+- **Purpose**: Hands-on workshops for practicing specification creation
+- **Features**: Guided specification creation, peer review simulation, methodology coaching, quality assessment
+- **Integration**: AI feedback system, collaboration tools, template library
 
-### Code Editor Components
+### Specification-to-Code Components
 
-#### CodeEditor
-- **Purpose**: Monaco Editor integration with language support and themes
-- **Features**: Syntax highlighting, IntelliSense, error detection, customizable themes
-- **Integration**: Monaco Editor API, code execution service
+#### SpecificationLinkedEditor
+- **Purpose**: Code editor that maintains traceability to specification documents
+- **Features**: Requirement highlighting, design reference panel, specification compliance checking, task-driven development
+- **Integration**: Specification documents, AI validation against specs, code quality metrics
 
-#### CodeExecutor
-- **Purpose**: Code execution interface with results display
-- **Features**: Run button, execution status, output/error display, execution metrics
-- **Integration**: Execution API, real-time status updates
+#### ImplementationTracker
+- **Purpose**: Track implementation progress against specification tasks
+- **Features**: Task completion tracking, specification coverage analysis, implementation quality metrics
+- **Integration**: Task breakdown documents, code analysis service, progress tracking API
 
-#### TestRunner
-- **Purpose**: Run and display test case results for coding challenges
-- **Features**: Test case visualization, pass/fail indicators, detailed feedback
-- **Integration**: Execution API, challenge test cases from backend
+#### SpecificationValidator
+- **Purpose**: Validate code implementation against original specifications
+- **Features**: Requirement coverage analysis, design adherence checking, automated testing against acceptance criteria
+- **Integration**: Specification documents, AI analysis service, testing framework integration
 
-### AI Integration Components
+### AI-Powered Specification Assistance
 
-#### AIChat
-- **Purpose**: Real-time chat interface with Claude AI tutor
-- **Features**: Message history, streaming responses, code syntax highlighting in messages
-- **Integration**: WebSocket connection, AI chat API, message persistence
+#### SpecificationAITutor
+- **Purpose**: AI assistant specialized in specification-based development methodology
+- **Features**: Methodology guidance, document review, best practice suggestions, interactive Q&A
+- **Integration**: AI service with specification expertise, methodology knowledge base, real-time assistance
 
-#### CodeReviewer
-- **Purpose**: Display AI-generated code review and suggestions
-- **Features**: Line-by-line feedback, categorized suggestions, improvement recommendations
-- **Integration**: AI review API, code analysis results
+#### RequirementsAIReviewer
+- **Purpose**: AI-powered review of requirements documents for quality and completeness
+- **Features**: EARS format validation, completeness analysis, clarity suggestions, stakeholder perspective feedback
+- **Integration**: AI analysis service, requirements quality metrics, improvement recommendations
 
-#### HintProvider
-- **Purpose**: Context-aware hints and explanations for coding challenges
-- **Features**: Progressive hint disclosure, concept explanations, related resources
-- **Integration**: AI hints API, lesson context
+#### DesignAIAnalyzer
+- **Purpose**: AI analysis of design documents for architectural soundness and best practices
+- **Features**: Architecture review, component design feedback, scalability analysis, technology recommendations
+- **Integration**: AI service with architectural knowledge, design pattern library, best practice database
 
-### Progress Tracking Components
+### Collaboration and Team Components
 
-#### ProgressDashboard
-- **Purpose**: Overview of user learning progress and achievements
-- **Features**: Progress charts, completion statistics, learning streaks
-- **Integration**: Progress API, chart visualization with Recharts
+#### CollaborativeSpecEditor
+- **Purpose**: Real-time collaborative editing of specification documents
+- **Features**: Multi-user editing, conflict resolution, change tracking, comment system, approval workflows
+- **Integration**: WebSocket for real-time sync, version control system, user management
 
-#### ProgressChart
-- **Purpose**: Visual representation of learning progress over time
-- **Features**: Multiple chart types, time range selection, skill breakdown
-- **Integration**: Progress API, customizable chart configurations
+#### SpecificationReviewBoard
+- **Purpose**: Structured review process for specification documents
+- **Features**: Review assignments, approval workflows, feedback consolidation, review metrics
+- **Integration**: User management system, notification service, review tracking API
+
+#### TeamProgressDashboard
+- **Purpose**: Team-level view of specification-based development adoption and progress
+- **Features**: Team methodology metrics, project specification quality, collaboration effectiveness, skill development tracking
+- **Integration**: Team management API, specification analytics, progress tracking service
 
 ## Data Models
 
 ### Frontend State Models
 
-#### AuthState
+#### SpecificationProjectState
 ```typescript
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  refreshToken: string | null;
-  isAuthenticated: boolean;
+interface SpecificationProjectState {
+  currentProject: SpecificationProject | null;
+  projects: SpecificationProject[];
+  currentPhase: SpecificationPhase;
   isLoading: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
-  logout: () => void;
-  refreshAuth: () => Promise<void>;
+  createProject: (projectData: CreateProjectData) => Promise<void>;
+  updateProject: (projectId: string, updates: ProjectUpdates) => Promise<void>;
+  setCurrentPhase: (phase: SpecificationPhase) => void;
+  validatePhaseCompletion: (phase: SpecificationPhase) => boolean;
 }
 ```
 
-#### LessonsState
+#### RequirementsState
 ```typescript
-interface LessonsState {
-  lessons: Lesson[];
-  tracks: Track[];
-  currentLesson: Lesson | null;
-  currentTrack: Track | null;
-  isLoading: boolean;
-  fetchLessons: () => Promise<void>;
-  fetchTracks: () => Promise<void>;
-  setCurrentLesson: (lesson: Lesson) => void;
+interface RequirementsState {
+  requirements: RequirementDocument | null;
+  userStories: UserStory[];
+  acceptanceCriteria: AcceptanceCriteria[];
+  isEditing: boolean;
+  validationResults: ValidationResult[];
+  updateRequirements: (content: string) => void;
+  addUserStory: (story: UserStory) => void;
+  validateEARSFormat: () => Promise<ValidationResult[]>;
+  requestAIReview: () => Promise<AIReviewResult>;
 }
 ```
 
-#### EditorState
+#### DesignDocumentState
 ```typescript
-interface EditorState {
-  code: string;
-  language: ProgrammingLanguage;
-  isExecuting: boolean;
-  executionResult: ExecutionResult | null;
-  currentChallenge: Challenge | null;
-  setCode: (code: string) => void;
-  executeCode: () => Promise<void>;
-  submitSolution: () => Promise<void>;
+interface DesignDocumentState {
+  designDocument: DesignDocument | null;
+  architectureDiagrams: Diagram[];
+  componentSpecs: ComponentSpecification[];
+  dataModels: DataModel[];
+  isEditing: boolean;
+  updateDesign: (section: string, content: string) => void;
+  addDiagram: (diagram: Diagram) => void;
+  validateDesignCompleteness: () => Promise<ValidationResult[]>;
+  generateImplementationTasks: () => Promise<TaskList>;
 }
 ```
 
-#### ChatState
+#### CollaborationState
 ```typescript
-interface ChatState {
-  messages: ChatMessage[];
+interface CollaborationState {
+  activeCollaborators: Collaborator[];
+  documentLocks: DocumentLock[];
+  comments: Comment[];
+  reviewRequests: ReviewRequest[];
   isConnected: boolean;
-  isTyping: boolean;
-  sendMessage: (message: string) => void;
-  clearHistory: () => void;
-  connect: () => void;
-  disconnect: () => void;
+  joinCollaboration: (documentId: string) => void;
+  addComment: (comment: Comment) => void;
+  requestReview: (reviewRequest: ReviewRequest) => void;
+  approveDocument: (documentId: string) => void;
 }
 ```
 
@@ -202,42 +216,54 @@ interface ChatState {
 
 #### API Service Layer
 ```typescript
-class ApiService {
+class SpecificationApiService {
   private axiosInstance: AxiosInstance;
   
-  // Authentication methods
-  auth: {
-    login: (credentials: LoginCredentials) => Promise<AuthResponse>;
-    register: (userData: RegisterData) => Promise<AuthResponse>;
-    refreshToken: () => Promise<TokenResponse>;
-    logout: () => Promise<void>;
+  // Specification project methods
+  projects: {
+    create: (projectData: CreateProjectData) => Promise<SpecificationProject>;
+    getAll: () => Promise<SpecificationProject[]>;
+    getById: (id: string) => Promise<SpecificationProject>;
+    update: (id: string, updates: ProjectUpdates) => Promise<SpecificationProject>;
+    delete: (id: string) => Promise<void>;
   };
   
-  // Lessons methods
-  lessons: {
-    getAll: () => Promise<Lesson[]>;
-    getById: (id: string) => Promise<Lesson>;
-    getByCategory: (category: string) => Promise<Lesson[]>;
+  // Requirements document methods
+  requirements: {
+    create: (projectId: string, content: RequirementDocument) => Promise<RequirementDocument>;
+    update: (documentId: string, content: RequirementDocument) => Promise<RequirementDocument>;
+    validate: (content: RequirementDocument) => Promise<ValidationResult[]>;
+    requestAIReview: (content: RequirementDocument) => Promise<AIReviewResult>;
   };
   
-  // AI methods
-  ai: {
-    reviewCode: (code: string, language: string) => Promise<CodeReview>;
-    generateHint: (challenge: string, context: string) => Promise<Hint>;
-    chatStream: (message: string) => Promise<ReadableStream>;
+  // Design document methods
+  design: {
+    create: (projectId: string, content: DesignDocument) => Promise<DesignDocument>;
+    update: (documentId: string, content: DesignDocument) => Promise<DesignDocument>;
+    generateTasks: (designDocument: DesignDocument) => Promise<TaskList>;
+    requestAIAnalysis: (content: DesignDocument) => Promise<AIAnalysisResult>;
   };
   
-  // Execution methods
-  execution: {
-    executeCode: (code: string, language: string) => Promise<ExecutionResult>;
-    testSolution: (code: string, challenge: Challenge) => Promise<TestResult>;
+  // Template and example methods
+  templates: {
+    getAll: () => Promise<SpecificationTemplate[]>;
+    getByCategory: (category: string) => Promise<SpecificationTemplate[]>;
+    getExamples: (templateId: string) => Promise<SpecificationExample[]>;
   };
   
-  // Progress methods
-  progress: {
-    getUserProgress: () => Promise<UserProgress>;
-    updateLessonProgress: (lessonId: string, progress: ProgressUpdate) => Promise<void>;
-    getStats: () => Promise<ProgressStats>;
+  // Collaboration methods
+  collaboration: {
+    joinDocument: (documentId: string) => Promise<CollaborationSession>;
+    addComment: (documentId: string, comment: Comment) => Promise<Comment>;
+    requestReview: (documentId: string, reviewRequest: ReviewRequest) => Promise<ReviewRequest>;
+    approveDocument: (documentId: string) => Promise<ApprovalResult>;
+  };
+  
+  // Learning and progress methods
+  learning: {
+    getMethodologyLessons: () => Promise<MethodologyLesson[]>;
+    updateProgress: (lessonId: string, progress: LearningProgress) => Promise<void>;
+    getSpecificationMetrics: (userId: string) => Promise<SpecificationMetrics>;
   };
 }
 ```
@@ -258,29 +284,29 @@ class ApiService {
 ## Testing Strategy
 
 ### Unit Testing
-- **Component Testing**: React Testing Library for component behavior
-- **Hook Testing**: Custom hooks with @testing-library/react-hooks
-- **Service Testing**: API service methods with mocked responses
-- **Utility Testing**: Pure functions and helper utilities
+- **Specification Component Testing**: Test requirements editor, design document editor, and task breakdown components
+- **Validation Logic Testing**: Test EARS format validation, design completeness checks, and specification quality metrics
+- **AI Integration Testing**: Mock AI services for specification review and feedback functionality
+- **Collaboration Testing**: Test real-time editing, conflict resolution, and review workflows
 
 ### Integration Testing
-- **API Integration**: End-to-end API communication testing
-- **Authentication Flow**: Complete login/logout/registration flows
-- **Code Execution**: Editor integration with execution service
-- **Real-time Features**: WebSocket connection and message handling
+- **Specification Workflow Testing**: End-to-end testing of requirements → design → tasks → implementation flow
+- **Template System Testing**: Test template application, customization, and example integration
+- **AI Feedback Integration**: Test AI-powered specification review and improvement suggestions
+- **Collaboration Features**: Test multi-user editing, commenting, and approval processes
 
 ### End-to-End Testing
-- **User Journeys**: Complete user workflows from registration to lesson completion
-- **Cross-Browser Testing**: Compatibility across modern browsers
-- **Responsive Testing**: Mobile and desktop experience validation
-- **Performance Testing**: Core Web Vitals and loading performance
+- **Complete Specification Lifecycle**: Test full project creation from initial requirements to final implementation
+- **Learning Journey Testing**: Test methodology lessons, practice exercises, and skill progression
+- **Team Collaboration Workflows**: Test team-based specification development and review processes
+- **Cross-Platform Compatibility**: Ensure specification tools work across different devices and browsers
 
 ### Testing Tools
-- **Jest**: Unit test runner and assertion library
-- **React Testing Library**: Component testing utilities
-- **MSW (Mock Service Worker)**: API mocking for tests
-- **Playwright**: End-to-end testing framework
-- **Storybook**: Component development and visual testing
+- **Jest**: Unit test runner with specification-focused test utilities
+- **React Testing Library**: Component testing for specification editing interfaces
+- **MSW (Mock Service Worker)**: API mocking for specification services and AI integration
+- **Playwright**: End-to-end testing for complete specification workflows
+- **Storybook**: Component development and visual testing for specification UI components
 
 ## Performance Optimization
 
