@@ -12,6 +12,7 @@ interface RetryConfig {
 const DEFAULT_RETRY_CONFIG: RetryConfig = {
   retries: 3,
   retryDelay: 1000,
+  // eslint-disable-next-line no-unused-vars
   retryCondition: (error: AxiosError) => {
     // Retry on network errors or 5xx server errors
     return !error.response || (error.response.status >= 500 && error.response.status < 600);
@@ -47,6 +48,7 @@ class ApiClient {
 
         // Log request in development
         if (appConfig.features.debug) {
+          // eslint-disable-next-line no-console
           console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
             headers: config.headers,
             data: config.data,
@@ -56,6 +58,7 @@ class ApiClient {
         return config;
       },
       (error) => {
+        // eslint-disable-next-line no-console
         console.error('[API Request Error]', error);
         return Promise.reject(error);
       }
@@ -66,6 +69,7 @@ class ApiClient {
       (response: AxiosResponse) => {
         // Log response in development
         if (appConfig.features.debug) {
+          // eslint-disable-next-line no-console
           console.log(`[API Response] ${response.status} ${response.config.url}`, {
             data: response.data,
           });
@@ -78,6 +82,7 @@ class ApiClient {
 
         // Log error in development
         if (appConfig.features.debug) {
+          // eslint-disable-next-line no-console
           console.error(`[API Error] ${error.response?.status} ${originalRequest?.url}`, {
             error: error.response?.data,
             message: error.message,
@@ -124,6 +129,7 @@ class ApiClient {
         return parsed.state?.token || null;
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error getting auth token:', error);
     }
     return null;
@@ -154,6 +160,7 @@ class ApiClient {
       parsed.state.refreshToken = newRefreshToken;
       localStorage.setItem('auth-storage', JSON.stringify(parsed));
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Token refresh failed:', error);
       throw error;
     }
@@ -189,6 +196,7 @@ class ApiClient {
       );
 
       try {
+        // eslint-disable-next-line no-console
         console.log(`[API Retry] Attempt ${retryCount}/${maxRetries} for ${originalRequest.url}`);
         return await this.axiosInstance(originalRequest);
       } catch (retryError) {
