@@ -195,6 +195,9 @@ importers:
       jest-environment-jsdom:
         specifier: ^30.0.4
         version: 30.0.4
+      monaco-editor:
+        specifier: ^0.52.2
+        version: 0.52.2
       msw:
         specifier: ^2.10.4
         version: 2.10.4(@types/node@20.19.7)(typescript@5.8.3)

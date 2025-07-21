@@ -10,6 +10,7 @@ export default {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '^monaco-editor$': '<rootDir>/src/__mocks__/monaco-editor.ts',
   },
   setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
   testMatch: [
@@ -26,8 +27,11 @@ export default {
   coverageReporters: ['text', 'lcov', 'html'],
   passWithNoTests: true,
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
-      useESM: true,
-    }],
+    '^.+\\.(ts|tsx)$': [
+      'ts-jest',
+      {
+        useESM: true,
+      },
+    ],
   },
 };

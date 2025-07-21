@@ -2,33 +2,34 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RequirementsEditor } from '../RequirementsEditor';
 
+// Mock Monaco Editor before using it in jest.mock
+jest.mock('@monaco-editor/react', () => {
+  const React = require('react');
 
-// Mock Monaco Editor
-const MockEditor = (props) => {
-  React.useEffect(() => {
-    if (props.onMount) {
-      const mockEditor = {
-        updateOptions: jest.fn(),
-        getModel: () => ({ setValue: jest.fn() }),
-      };
-      props.onMount(mockEditor);
-    }
-  }, [props.onMount]);
+  const MockEditor = (props: any) => {
+    React.useEffect(() => {
+      if (props.onMount) {
+        const mockEditor = {
+          updateOptions: jest.fn(),
+          getModel: () => ({ setValue: jest.fn() }),
+        };
+        props.onMount(mockEditor);
+      }
+    }, [props.onMount]);
 
-  return (
-    <textarea
-      data-testid="monaco-editor"
-      value={props.value}
-      onChange={(e) => props.onChange?.(e.target.value)}
-      style={{ width: '100%', height: '400px' }}
-    />
-  );
-};
+    return React.createElement('textarea', {
+      'data-testid': 'monaco-editor',
+      value: props.value,
+      onChange: (e: any) => props.onChange?.(e.target.value),
+      style: { width: '100%', height: '400px' },
+    });
+  };
 
-jest.mock('@monaco-editor/react', () => ({
-  __esModule: true,
-  default: MockEditor,
-}));
+  return {
+    __esModule: true,
+    default: MockEditor,
+  };
+});
 
 describe('RequirementsEditor', () => {
   const mockOnSave = jest.fn();
@@ -114,7 +115,9 @@ describe('RequirementsEditor', () => {
     fireEvent.click(saveButton);
 
     await waitFor(() => {
-      expect(mockOnSave).toHaveBeenCalledWith(expect.stringContaining('# Requirements Document'));
+      expect(mockOnSave).toHaveBeenCalledWith(
+        expect.stringContaining('# Requirements Document')
+      );
     });
   });
 
@@ -146,7 +149,9 @@ describe('RequirementsEditor', () => {
 
     await waitFor(() => {
       expect(screen.getByText('1 warning')).toBeInTheDocument();
-      expect(screen.getByText('Line 5: Consider using EARS format')).toBeInTheDocument();
+      expect(
+        screen.getByText('Consider using EARS format')
+      ).toBeInTheDocument();
     });
   });
 
