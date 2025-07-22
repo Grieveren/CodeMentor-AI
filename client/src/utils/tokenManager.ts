@@ -36,17 +36,17 @@ export const getTokenExpirationTime = (token: string): number => {
  * Schedule automatic token refresh
  * Refreshes token 5 minutes before expiration
  */
-export const scheduleTokenRefresh = (token: string): NodeJS.Timeout | null => {
+export const scheduleTokenRefresh = (token: string): number | null => {
   const expirationTime = getTokenExpirationTime(token);
   const refreshTime = Math.max(0, (expirationTime - 300) * 1000); // 5 minutes before expiration
-  
+
   if (refreshTime <= 0) {
     return null;
   }
 
   return setTimeout(() => {
     const { refreshAuth } = useAuthStore.getState();
-    refreshAuth().catch((error) => {
+    refreshAuth().catch(error => {
       console.error('Scheduled token refresh failed:', error);
     });
   }, refreshTime);
@@ -57,7 +57,7 @@ export const scheduleTokenRefresh = (token: string): NodeJS.Timeout | null => {
  */
 export const getAuthHeader = (): Record<string, string> => {
   const { token } = useAuthStore.getState();
-  
+
   if (!token) {
     return {};
   }
@@ -72,7 +72,7 @@ export const getAuthHeader = (): Record<string, string> => {
  */
 export const isValidToken = (): boolean => {
   const { token } = useAuthStore.getState();
-  
+
   if (!token) {
     return false;
   }
@@ -85,7 +85,7 @@ export const isValidToken = (): boolean => {
  * Handles automatic token refresh scheduling
  */
 export class TokenRefreshManager {
-  private refreshTimeout: NodeJS.Timeout | null = null;
+  private refreshTimeout: number | null = null;
 
   /**
    * Start automatic token refresh scheduling

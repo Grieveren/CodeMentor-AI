@@ -26,9 +26,9 @@ interface LoginFormProps {
   onSwitchToRegister?: () => void;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ 
-  onSuccess, 
-  onSwitchToRegister 
+export const LoginForm: React.FC<LoginFormProps> = ({
+  onSuccess,
+  onSwitchToRegister,
 }) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const { login, isLoading, error, clearError } = useAuth();
@@ -60,7 +60,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       onSuccess?.();
     } catch (err) {
       // Error is handled by the auth store
-      console.error('Login failed:', err);
+      // Error is handled by the auth store
     }
   };
 
@@ -148,7 +148,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         {onSwitchToRegister && (
           <div className="mt-8 pt-6 border-t border-gray-200 text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <button
                 type="button"
                 onClick={onSwitchToRegister}

@@ -15,16 +15,17 @@ import type { SpecificationTemplate } from '@/types/specifications';
 
 // Form validation schema
 const projectCreationSchema = z.object({
-  name: z.string()
+  name: z
+    .string()
     .min(1, 'Project name is required')
     .min(3, 'Project name must be at least 3 characters')
     .max(100, 'Project name must be less than 100 characters'),
-  description: z.string()
+  description: z
+    .string()
     .min(1, 'Project description is required')
     .min(10, 'Description must be at least 10 characters')
     .max(500, 'Description must be less than 500 characters'),
-  domain: z.string()
-    .min(1, 'Domain is required'),
+  domain: z.string().min(1, 'Domain is required'),
   complexity: z.enum(['simple', 'moderate', 'complex', 'enterprise'], {
     required_error: 'Complexity level is required',
   }),
@@ -35,8 +36,6 @@ const projectCreationSchema = z.object({
 });
 
 type ProjectCreationFormData = z.infer<typeof projectCreationSchema>;
-
-
 
 // Domain options
 const domainOptions = [
@@ -112,8 +111,10 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { createProject, isLoading, error, clearError } = useSpecificationProject();
-  const [selectedTemplate, setSelectedTemplate] = useState<SpecificationTemplate | null>(null);
+  const { createProject, isLoading, error, clearError } =
+    useSpecificationProject();
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<SpecificationTemplate | null>(null);
   const [showTemplatePreview, setShowTemplatePreview] = useState(false);
   const [templates, setTemplates] = useState<SpecificationTemplate[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(false);
@@ -156,14 +157,17 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
   }, [isOpen]);
 
   // Filter templates based on selected domain
-  const filteredTemplates = templates.filter((template) => {
+  const filteredTemplates = templates.filter(template => {
     if (!watchedDomain) return true;
-    return template.category.includes(watchedDomain) || template.metadata.tags.includes(watchedDomain);
+    return (
+      template.category.includes(watchedDomain) ||
+      template.metadata.tags.includes(watchedDomain)
+    );
   });
 
   const onSubmit = async (data: ProjectCreationFormData) => {
     clearError();
-    
+
     try {
       const projectData: CreateProjectData = {
         name: data.name,
@@ -175,12 +179,12 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
       };
 
       const project = await createProject(projectData);
-      
+
       // Reset form and close modal
       reset();
       setSelectedTemplate(null);
       onClose();
-      
+
       // Call success callback with project ID
       if (onSuccess) {
         onSuccess(project.id);
@@ -228,8 +232,10 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
 
           {/* Project Basic Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900">Project Information</h3>
-            
+            <h3 className="text-lg font-medium text-gray-900">
+              Project Information
+            </h3>
+
             <div>
               <Input
                 label="Project Name"
@@ -250,7 +256,10 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
             </div>
 
             <div>
-              <label htmlFor="domain-select" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="domain-select"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Domain
               </label>
               <select
@@ -259,22 +268,26 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
                 {...register('domain')}
               >
                 <option value="">Select a domain</option>
-                {domainOptions.map((option) => (
+                {domainOptions.map(option => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
                 ))}
               </select>
               {errors.domain && (
-                <p className="mt-1 text-sm text-red-600">{errors.domain.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.domain.message}
+                </p>
               )}
             </div>
           </div>
 
           {/* Project Configuration */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900">Project Configuration</h3>
-            
+            <h3 className="text-lg font-medium text-gray-900">
+              Project Configuration
+            </h3>
+
             {/* Complexity Selection */}
             <div>
               <fieldset>
@@ -282,7 +295,7 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
                   Complexity Level
                 </legend>
                 <div className="grid grid-cols-2 gap-3">
-                  {complexityOptions.map((option) => (
+                  {complexityOptions.map(option => (
                     <label
                       key={option.value}
                       className="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none"
@@ -300,14 +313,18 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
                             {option.label}
                           </Badge>
                         </div>
-                        <p className="mt-1 text-sm text-gray-500">{option.description}</p>
+                        <p className="mt-1 text-sm text-gray-500">
+                          {option.description}
+                        </p>
                       </div>
                     </label>
                   ))}
                 </div>
               </fieldset>
               {errors.complexity && (
-                <p className="mt-1 text-sm text-red-600">{errors.complexity.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.complexity.message}
+                </p>
               )}
             </div>
 
@@ -318,7 +335,7 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
                   Development Methodology
                 </legend>
                 <div className="grid grid-cols-2 gap-3">
-                  {methodologyOptions.map((option) => (
+                  {methodologyOptions.map(option => (
                     <label
                       key={option.value}
                       className="relative flex cursor-pointer rounded-lg border p-4 focus:outline-none"
@@ -331,15 +348,21 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
                         {...register('methodology')}
                       />
                       <div className="flex flex-1 flex-col">
-                        <div className="font-medium text-gray-900">{option.label}</div>
-                        <p className="mt-1 text-sm text-gray-500">{option.description}</p>
+                        <div className="font-medium text-gray-900">
+                          {option.label}
+                        </div>
+                        <p className="mt-1 text-sm text-gray-500">
+                          {option.description}
+                        </p>
                       </div>
                     </label>
                   ))}
                 </div>
               </fieldset>
               {errors.methodology && (
-                <p className="mt-1 text-sm text-red-600">{errors.methodology.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.methodology.message}
+                </p>
               )}
             </div>
           </div>
@@ -347,61 +370,70 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
           {/* Template Selection */}
           {watchedDomain && (
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">Template Selection (Optional)</h3>
+              <h3 className="text-lg font-medium text-gray-900">
+                Template Selection (Optional)
+              </h3>
               <p className="text-sm text-gray-600">
-                Choose a template to get started quickly with pre-defined requirements and structure.
+                Choose a template to get started quickly with pre-defined
+                requirements and structure.
               </p>
-              
+
               {templatesLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <Spinner size="md" />
-                  <span className="ml-2 text-sm text-gray-600">Loading templates...</span>
+                  <span className="ml-2 text-sm text-gray-600">
+                    Loading templates...
+                  </span>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-4">
-                  {filteredTemplates.map((template) => (
-                  <div
-                    key={template.id}
-                    className={`relative rounded-lg border p-4 cursor-pointer hover:bg-gray-50 ${
-                      selectedTemplate?.id === template.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200'
-                    }`}
-                    onClick={() => handleTemplateSelect(template)}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2">
-                          <h4 className="font-medium text-gray-900">{template.name}</h4>
-                          <Badge color="gray" size="sm">
-                            {template.category.replace('_', ' ')}
-                          </Badge>
-                        </div>
-                        <p className="mt-1 text-sm text-gray-600">{template.description}</p>
-                        <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500">
-                          <span>★ {template.metadata.rating}</span>
-                          <span>{template.metadata.usageCount} uses</span>
-                          <div className="flex space-x-1">
-                            {template.metadata.tags.slice(0, 3).map((tag) => (
-                              <Badge key={tag} color="gray" size="xs">
-                                {tag}
-                              </Badge>
-                            ))}
+                  {filteredTemplates.map(template => (
+                    <div
+                      key={template.id}
+                      className={`relative rounded-lg border p-4 cursor-pointer hover:bg-gray-50 ${
+                        selectedTemplate?.id === template.id
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200'
+                      }`}
+                      onClick={() => handleTemplateSelect(template)}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <h4 className="font-medium text-gray-900">
+                              {template.name}
+                            </h4>
+                            <Badge color="gray" size="sm">
+                              {template.category.replace('_', ' ')}
+                            </Badge>
+                          </div>
+                          <p className="mt-1 text-sm text-gray-600">
+                            {template.description}
+                          </p>
+                          <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500">
+                            <span>★ {template.metadata.rating}</span>
+                            <span>{template.metadata.usageCount} uses</span>
+                            <div className="flex space-x-1">
+                              {template.metadata.tags.slice(0, 3).map(tag => (
+                                <Badge key={tag} color="gray" size="xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
                         </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={e => {
+                            e.stopPropagation();
+                            handleTemplatePreview(template);
+                          }}
+                        >
+                          Preview
+                        </Button>
                       </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleTemplatePreview(template);
-                        }}
-                      >
-                        Preview
-                      </Button>
-                    </div>
                     </div>
                   ))}
                 </div>
@@ -411,13 +443,22 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
                 <div className="rounded-md bg-blue-50 p-4">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      <svg
+                        className="h-5 w-5 text-blue-400"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <div className="ml-3">
                       <p className="text-sm text-blue-700">
-                        Template "{selectedTemplate.name}" selected. This will provide a starting structure for your project.
+                        Template &quot;{selectedTemplate.name}&quot; selected.
+                        This will provide a starting structure for your project.
                       </p>
                     </div>
                   </div>
@@ -436,10 +477,7 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={!isValid || isLoading}
-            >
+            <Button type="submit" disabled={!isValid || isLoading}>
               {isLoading ? (
                 <>
                   <Spinner size="sm" className="mr-2" />
@@ -464,13 +502,15 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
           <div className="space-y-4">
             <div>
               <h4 className="font-medium text-gray-900">Description</h4>
-              <p className="mt-1 text-sm text-gray-600">{selectedTemplate.description}</p>
+              <p className="mt-1 text-sm text-gray-600">
+                {selectedTemplate.description}
+              </p>
             </div>
-            
+
             <div>
               <h4 className="font-medium text-gray-900">Prerequisites</h4>
               <div className="mt-1 flex flex-wrap gap-1">
-                {selectedTemplate.metadata.prerequisites.map((prereq) => (
+                {selectedTemplate.metadata.prerequisites.map(prereq => (
                   <Badge key={prereq} color="gray" size="sm">
                     {prereq}
                   </Badge>
@@ -479,7 +519,9 @@ export const ProjectCreationForm: React.FC<ProjectCreationFormProps> = ({
             </div>
 
             <div>
-              <h4 className="font-medium text-gray-900">Template Content Preview</h4>
+              <h4 className="font-medium text-gray-900">
+                Template Content Preview
+              </h4>
               <div className="mt-2 rounded-md bg-gray-50 p-4">
                 <pre className="text-sm text-gray-700 whitespace-pre-wrap">
                   {selectedTemplate.content.substring(0, 500)}

@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
-import { 
-  ChevronLeftIcon, 
+import React from 'react';
+import {
+  ChevronLeftIcon,
   ChevronRightIcon,
   ExclamationTriangleIcon,
-  BookOpenIcon 
+  BookOpenIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
@@ -41,18 +41,18 @@ export const LessonBrowser: React.FC<LessonBrowserProps> = ({
     const pages = [];
     const maxVisiblePages = 5;
     const { page, totalPages } = pagination;
-    
+
     let startPage = Math.max(1, page - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-    
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
-    
+
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
-    
+
     return pages;
   };
 
@@ -60,13 +60,18 @@ export const LessonBrowser: React.FC<LessonBrowserProps> = ({
 
   if (error) {
     return (
-      <div className={cn('flex flex-col items-center justify-center py-12', className)}>
+      <div
+        className={cn(
+          'flex flex-col items-center justify-center py-12',
+          className
+        )}
+      >
         <ExclamationTriangleIcon className="h-12 w-12 text-error-500 mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Failed to load lessons</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
+          Failed to load lessons
+        </h3>
         <p className="text-gray-600 text-center mb-4">{error}</p>
-        <Button onClick={() => window.location.reload()}>
-          Try Again
-        </Button>
+        <Button onClick={() => window.location.reload()}>Try Again</Button>
       </div>
     );
   }
@@ -86,14 +91,12 @@ export const LessonBrowser: React.FC<LessonBrowserProps> = ({
         <div className="flex items-center gap-2">
           <BookOpenIcon className="h-5 w-5 text-gray-500" />
           <span className="text-sm text-gray-600">
-            {loading ? (
-              'Loading lessons...'
-            ) : (
-              `${pagination.total} lesson${pagination.total !== 1 ? 's' : ''} found`
-            )}
+            {loading
+              ? 'Loading lessons...'
+              : `${pagination.total} lesson${pagination.total !== 1 ? 's' : ''} found`}
           </span>
         </div>
-        
+
         {pagination.totalPages > 1 && (
           <div className="text-sm text-gray-600">
             Page {pagination.page} of {pagination.totalPages}
@@ -112,7 +115,9 @@ export const LessonBrowser: React.FC<LessonBrowserProps> = ({
       {!loading && lessons.length === 0 && (
         <div className="flex flex-col items-center justify-center py-12">
           <BookOpenIcon className="h-12 w-12 text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No lessons found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No lessons found
+          </h3>
           <p className="text-gray-600 text-center mb-4">
             Try adjusting your filters or search terms to find more lessons.
           </p>
@@ -128,7 +133,7 @@ export const LessonBrowser: React.FC<LessonBrowserProps> = ({
       {!loading && lessons.length > 0 && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {lessons.map((lesson) => (
+            {lessons.map(lesson => (
               <LessonCard
                 key={lesson.id}
                 lesson={lesson}
@@ -175,7 +180,7 @@ export const LessonBrowser: React.FC<LessonBrowserProps> = ({
                 )}
 
                 {/* Visible page numbers */}
-                {pageNumbers.map((pageNum) => (
+                {pageNumbers.map(pageNum => (
                   <Button
                     key={pageNum}
                     variant={pageNum === pagination.page ? 'primary' : 'ghost'}
@@ -187,13 +192,19 @@ export const LessonBrowser: React.FC<LessonBrowserProps> = ({
                 ))}
 
                 {/* Last page if not visible */}
-                {pageNumbers[pageNumbers.length - 1] < pagination.totalPages && (
+                {pageNumbers[pageNumbers.length - 1] <
+                  pagination.totalPages && (
                   <>
-                    {pageNumbers[pageNumbers.length - 1] < pagination.totalPages - 1 && (
+                    {pageNumbers[pageNumbers.length - 1] <
+                      pagination.totalPages - 1 && (
                       <span className="px-2 text-gray-500">...</span>
                     )}
                     <Button
-                      variant={pagination.totalPages === pagination.page ? 'primary' : 'ghost'}
+                      variant={
+                        pagination.totalPages === pagination.page
+                          ? 'primary'
+                          : 'ghost'
+                      }
                       size="sm"
                       onClick={() => handlePageChange(pagination.totalPages)}
                     >

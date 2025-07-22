@@ -1,5 +1,5 @@
 import { useAuthStore } from '@/store/authStore';
-import { isTokenExpired, tokenRefreshManager } from './tokenManager';
+import { isTokenExpired } from './tokenManager';
 import { handleSessionExpired } from './logout';
 
 /**
@@ -7,7 +7,7 @@ import { handleSessionExpired } from './logout';
  */
 
 export class SessionManager {
-  private checkInterval: NodeJS.Timeout | null = null;
+  private checkInterval: number | null = null;
   private readonly CHECK_INTERVAL = 60000; // Check every minute
   private readonly WARNING_THRESHOLD = 300000; // Warn 5 minutes before expiry
 
@@ -16,7 +16,7 @@ export class SessionManager {
    */
   start(): void {
     this.stop(); // Clear any existing interval
-    
+
     this.checkInterval = setInterval(() => {
       this.checkSession();
     }, this.CHECK_INTERVAL);
@@ -97,7 +97,7 @@ export class SessionManager {
   private handleSessionWarning(timeUntilExpiry: number): void {
     const minutes = Math.floor(timeUntilExpiry / 60000);
     console.warn(`Session expires in ${minutes} minutes`);
-    
+
     // You could show a toast notification or modal here
     // For now, we'll just log it
   }

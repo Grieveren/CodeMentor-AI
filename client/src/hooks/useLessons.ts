@@ -1,6 +1,6 @@
 import { useLessonsStore } from '@/store/lessonsStore';
 import { useCallback, useEffect } from 'react';
-import type { Lesson, Track, Category, LessonQueryParams } from '@/types';
+import type { Lesson, Track, LessonQueryParams } from '@/types';
 
 /**
  * Custom hook for lesson management
@@ -19,7 +19,7 @@ export const useLessons = () => {
   const recommendedLessons = store.recommendedLessons;
   const recentLessons = store.recentLessons;
   const popularLessons = store.popularLessons;
-  
+
   const filters = store.filters;
   const pagination = store.pagination;
   const loading = store.loading;
@@ -47,7 +47,7 @@ export const useLessons = () => {
   );
 
   const fetchTracks = useCallback(
-    (params?: { category?: string; difficulty?: string; search?: string }) => 
+    (params?: { category?: string; difficulty?: string; search?: string }) =>
       store.fetchTracks(params),
     [store.fetchTracks]
   );
@@ -68,7 +68,8 @@ export const useLessons = () => {
   );
 
   const setFilters = useCallback(
-    (newFilters: Parameters<typeof store.setFilters>[0]) => store.setFilters(newFilters),
+    (newFilters: Parameters<typeof store.setFilters>[0]) =>
+      store.setFilters(newFilters),
     [store.setFilters]
   );
 
@@ -88,22 +89,26 @@ export const useLessons = () => {
   );
 
   const completeLesson = useCallback(
-    (lessonId: string, timeSpent?: number) => store.completeLesson(lessonId, timeSpent),
+    (lessonId: string, timeSpent?: number) =>
+      store.completeLesson(lessonId, timeSpent),
     [store.completeLesson]
   );
 
   const updateLessonProgress = useCallback(
-    (lessonId: string, progress: number) => store.updateLessonProgress(lessonId, progress),
+    (lessonId: string, progress: number) =>
+      store.updateLessonProgress(lessonId, progress),
     [store.updateLessonProgress]
   );
 
   const getNextLesson = useCallback(
-    (currentLessonId: string, trackId?: string) => store.getNextLesson(currentLessonId, trackId),
+    (currentLessonId: string, trackId?: string) =>
+      store.getNextLesson(currentLessonId, trackId),
     [store.getNextLesson]
   );
 
   const getPreviousLesson = useCallback(
-    (currentLessonId: string, trackId?: string) => store.getPreviousLesson(currentLessonId, trackId),
+    (currentLessonId: string, trackId?: string) =>
+      store.getPreviousLesson(currentLessonId, trackId),
     [store.getPreviousLesson]
   );
 
@@ -153,7 +158,7 @@ export const useLessons = () => {
     pagination,
     loading,
     errors,
-    
+
     // Actions
     fetchLessons,
     fetchLessonById,
@@ -212,17 +217,26 @@ export const useLessonBrowser = () => {
     fetchLessons();
   }, [filters, pagination.page, pagination.limit]);
 
-  const handleFilterChange = useCallback((newFilters: Parameters<typeof setFilters>[0]) => {
-    setFilters(newFilters);
-  }, [setFilters]);
+  const handleFilterChange = useCallback(
+    (newFilters: Parameters<typeof setFilters>[0]) => {
+      setFilters(newFilters);
+    },
+    [setFilters]
+  );
 
-  const handleSearch = useCallback((query: string) => {
-    searchLessons(query);
-  }, [searchLessons]);
+  const handleSearch = useCallback(
+    (query: string) => {
+      searchLessons(query);
+    },
+    [searchLessons]
+  );
 
-  const handlePageChange = useCallback((page: number) => {
-    setPage(page);
-  }, [setPage]);
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setPage(page);
+    },
+    [setPage]
+  );
 
   const handleClearFilters = useCallback(() => {
     clearFilters();
@@ -278,31 +292,37 @@ export const useLessonViewer = (lessonId?: string) => {
     }
   }, [currentLesson, startLesson]);
 
-  const handleCompleteLesson = useCallback(async (timeSpent?: number) => {
-    if (currentLesson) {
-      try {
-        await completeLesson(currentLesson.id, timeSpent);
-      } catch (error) {
-        console.error('Failed to complete lesson:', error);
+  const handleCompleteLesson = useCallback(
+    async (timeSpent?: number) => {
+      if (currentLesson) {
+        try {
+          await completeLesson(currentLesson.id, timeSpent);
+        } catch (error) {
+          console.error('Failed to complete lesson:', error);
+        }
       }
-    }
-  }, [currentLesson, completeLesson]);
+    },
+    [currentLesson, completeLesson]
+  );
 
-  const handleUpdateProgress = useCallback(async (progress: number) => {
-    if (currentLesson) {
-      try {
-        await updateLessonProgress(currentLesson.id, progress);
-      } catch (error) {
-        console.error('Failed to update lesson progress:', error);
+  const handleUpdateProgress = useCallback(
+    async (progress: number) => {
+      if (currentLesson) {
+        try {
+          await updateLessonProgress(currentLesson.id, progress);
+        } catch (error) {
+          console.error('Failed to update lesson progress:', error);
+        }
       }
-    }
-  }, [currentLesson, updateLessonProgress]);
+    },
+    [currentLesson, updateLessonProgress]
+  );
 
   const handleNextLesson = useCallback(async () => {
     if (currentLesson) {
       try {
         const nextLesson = await getNextLesson(
-          currentLesson.id, 
+          currentLesson.id,
           currentTrack?.id
         );
         if (nextLesson) {
@@ -320,7 +340,7 @@ export const useLessonViewer = (lessonId?: string) => {
     if (currentLesson) {
       try {
         const previousLesson = await getPreviousLesson(
-          currentLesson.id, 
+          currentLesson.id,
           currentTrack?.id
         );
         if (previousLesson) {

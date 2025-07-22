@@ -15,6 +15,7 @@ interface ImportMetaEnv {
   readonly VITE_GOOGLE_ANALYTICS_ID: string;
 }
 
+// eslint-disable-next-line no-unused-vars
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }

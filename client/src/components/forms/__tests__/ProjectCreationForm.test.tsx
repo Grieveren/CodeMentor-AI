@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ProjectCreationForm } from '../ProjectCreationForm';
 
@@ -19,8 +19,13 @@ jest.mock('@/utils/config', () => ({
 import { useSpecificationProject } from '@/hooks/useSpecificationProject';
 import { templatesService } from '@/services/templatesService';
 
-const mockUseSpecificationProject = useSpecificationProject as jest.MockedFunction<typeof useSpecificationProject>;
-const mockTemplatesService = templatesService as jest.Mocked<typeof templatesService>;
+const mockUseSpecificationProject =
+  useSpecificationProject as jest.MockedFunction<
+    typeof useSpecificationProject
+  >;
+const mockTemplatesService = templatesService as jest.Mocked<
+  typeof templatesService
+>;
 
 // Mock templates data
 const mockTemplates = [
@@ -54,7 +59,7 @@ describe('ProjectCreationForm', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockUseSpecificationProject.mockReturnValue({
       createProject: mockCreateProject,
       isLoading: false,
@@ -85,7 +90,9 @@ describe('ProjectCreationForm', () => {
       />
     );
 
-    expect(screen.getByText('Create New Specification Project')).toBeInTheDocument();
+    expect(
+      screen.getByText('Create New Specification Project')
+    ).toBeInTheDocument();
     expect(screen.getByLabelText('Project Name')).toBeInTheDocument();
     expect(screen.getByLabelText('Description')).toBeInTheDocument();
     expect(screen.getByLabelText('Domain')).toBeInTheDocument();
@@ -100,12 +107,14 @@ describe('ProjectCreationForm', () => {
       />
     );
 
-    expect(screen.queryByText('Create New Specification Project')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Create New Specification Project')
+    ).not.toBeInTheDocument();
   });
 
   it('should validate required fields', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ProjectCreationForm
         isOpen={true}
@@ -115,13 +124,17 @@ describe('ProjectCreationForm', () => {
     );
 
     // Try to submit without filling required fields
-    const submitButton = screen.getByRole('button', { name: /create project/i });
+    const submitButton = screen.getByRole('button', {
+      name: /create project/i,
+    });
     await user.click(submitButton);
 
     // Should show validation errors
     await waitFor(() => {
       expect(screen.getByText('Project name is required')).toBeInTheDocument();
-      expect(screen.getByText('Project description is required')).toBeInTheDocument();
+      expect(
+        screen.getByText('Project description is required')
+      ).toBeInTheDocument();
       expect(screen.getByText('Domain is required')).toBeInTheDocument();
     });
 
@@ -131,7 +144,7 @@ describe('ProjectCreationForm', () => {
 
   it('should validate field lengths', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ProjectCreationForm
         isOpen={true}
@@ -144,18 +157,24 @@ describe('ProjectCreationForm', () => {
     await user.type(screen.getByLabelText('Project Name'), 'AB'); // Too short
     await user.type(screen.getByLabelText('Description'), 'Short'); // Too short
 
-    const submitButton = screen.getByRole('button', { name: /create project/i });
+    const submitButton = screen.getByRole('button', {
+      name: /create project/i,
+    });
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Project name must be at least 3 characters')).toBeInTheDocument();
-      expect(screen.getByText('Description must be at least 10 characters')).toBeInTheDocument();
+      expect(
+        screen.getByText('Project name must be at least 3 characters')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Description must be at least 10 characters')
+      ).toBeInTheDocument();
     });
   });
 
   it('should load and display templates when domain is selected', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ProjectCreationForm
         isOpen={true}
@@ -171,14 +190,16 @@ describe('ProjectCreationForm', () => {
     // Wait for templates to load
     await waitFor(() => {
       expect(mockTemplatesService.getTemplates).toHaveBeenCalled();
-      expect(screen.getByText('Template Selection (Optional)')).toBeInTheDocument();
+      expect(
+        screen.getByText('Template Selection (Optional)')
+      ).toBeInTheDocument();
       expect(screen.getByText('Basic Web Application')).toBeInTheDocument();
     });
   });
 
   it('should allow template selection', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ProjectCreationForm
         isOpen={true}
@@ -196,18 +217,22 @@ describe('ProjectCreationForm', () => {
       expect(screen.getByText('Basic Web Application')).toBeInTheDocument();
     });
 
-    const templateCard = screen.getByText('Basic Web Application').closest('div');
+    const templateCard = screen
+      .getByText('Basic Web Application')
+      .closest('div');
     await user.click(templateCard!);
 
     // Should show template selected message
     await waitFor(() => {
-      expect(screen.getByText(/Template "Basic Web Application" selected/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Template "Basic Web Application" selected/)
+      ).toBeInTheDocument();
     });
   });
 
   it('should show template preview', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ProjectCreationForm
         isOpen={true}
@@ -230,7 +255,9 @@ describe('ProjectCreationForm', () => {
 
     // Should show preview modal
     await waitFor(() => {
-      expect(screen.getByText('Template Preview: Basic Web Application')).toBeInTheDocument();
+      expect(
+        screen.getByText('Template Preview: Basic Web Application')
+      ).toBeInTheDocument();
       expect(screen.getByText('Prerequisites')).toBeInTheDocument();
     });
   });
@@ -239,7 +266,7 @@ describe('ProjectCreationForm', () => {
     const user = userEvent.setup();
     const mockProject = { id: 'project-123', name: 'Test Project' };
     mockCreateProject.mockResolvedValue(mockProject as any);
-    
+
     render(
       <ProjectCreationForm
         isOpen={true}
@@ -250,7 +277,10 @@ describe('ProjectCreationForm', () => {
 
     // Fill in valid form data
     await user.type(screen.getByLabelText('Project Name'), 'Test Project');
-    await user.type(screen.getByLabelText('Description'), 'This is a test project description');
+    await user.type(
+      screen.getByLabelText('Description'),
+      'This is a test project description'
+    );
     await user.selectOptions(screen.getByLabelText('Domain'), 'web');
 
     // Select complexity and methodology (they have default values but let's be explicit)
@@ -261,7 +291,9 @@ describe('ProjectCreationForm', () => {
     await user.click(methodologyRadio);
 
     // Submit the form
-    const submitButton = screen.getByRole('button', { name: /create project/i });
+    const submitButton = screen.getByRole('button', {
+      name: /create project/i,
+    });
     await user.click(submitButton);
 
     // Should call createProject with correct data
@@ -301,7 +333,7 @@ describe('ProjectCreationForm', () => {
       getProjectCompletion: jest.fn(),
       canCompleteProject: jest.fn(),
     });
-    
+
     render(
       <ProjectCreationForm
         isOpen={true}
@@ -332,7 +364,7 @@ describe('ProjectCreationForm', () => {
       getProjectCompletion: jest.fn(),
       canCompleteProject: jest.fn(),
     });
-    
+
     render(
       <ProjectCreationForm
         isOpen={true}
@@ -343,7 +375,7 @@ describe('ProjectCreationForm', () => {
 
     // Should show loading state
     expect(screen.getByText('Creating...')).toBeInTheDocument();
-    
+
     // Submit button should be disabled
     const submitButton = screen.getByRole('button', { name: /creating/i });
     expect(submitButton).toBeDisabled();
@@ -351,7 +383,7 @@ describe('ProjectCreationForm', () => {
 
   it('should close modal and reset form on cancel', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <ProjectCreationForm
         isOpen={true}

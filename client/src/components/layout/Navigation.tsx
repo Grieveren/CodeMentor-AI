@@ -1,5 +1,5 @@
-import { Fragment } from 'react';
-import { 
+import React, { Fragment } from 'react';
+import {
   HomeIcon,
   BookOpenIcon,
   CodeBracketIcon,
@@ -109,10 +109,12 @@ export const Navigation: React.FC<NavigationProps> = ({
   const updatedMainNavItems = mainNavItems.map(item => ({
     ...item,
     current: isCurrentPath(item.href),
-    children: item.children ? item.children.map(child => ({
-      ...child,
-      current: isCurrentPath(child.href),
-    })) : undefined,
+    children: item.children
+      ? item.children.map(child => ({
+          ...child,
+          current: isCurrentPath(child.href),
+        }))
+      : undefined,
   }));
 
   const updatedUserNavItems = userNavItems.map(item => ({
@@ -142,7 +144,9 @@ export const Navigation: React.FC<NavigationProps> = ({
           className={cn(
             'flex-shrink-0',
             collapsed && !isMobile ? 'h-6 w-6' : 'h-5 w-5',
-            isCurrent ? 'text-primary-700' : 'text-gray-400 group-hover:text-gray-500',
+            isCurrent
+              ? 'text-primary-700'
+              : 'text-gray-400 group-hover:text-gray-500',
             !collapsed && !isChild && 'mr-3'
           )}
           aria-hidden="true"
@@ -165,13 +169,13 @@ export const Navigation: React.FC<NavigationProps> = ({
     <nav className={cn('flex flex-col', isMobile ? 'px-4 py-4' : 'px-3 py-4')}>
       {/* Main navigation */}
       <div className="space-y-1">
-        {updatedMainNavItems.map((item) => (
+        {updatedMainNavItems.map(item => (
           <Fragment key={item.name}>
             {renderNavigationItem(item)}
             {/* Render children if they exist and sidebar is not collapsed */}
             {item.children && (!collapsed || isMobile) && (
               <div className="mt-1 space-y-1">
-                {item.children.map((child) => renderNavigationItem(child, true))}
+                {item.children.map(child => renderNavigationItem(child, true))}
               </div>
             )}
           </Fragment>
@@ -179,11 +183,16 @@ export const Navigation: React.FC<NavigationProps> = ({
       </div>
 
       {/* Divider */}
-      <div className={cn('my-6 border-t border-gray-200', collapsed && !isMobile && 'mx-2')} />
+      <div
+        className={cn(
+          'my-6 border-t border-gray-200',
+          collapsed && !isMobile && 'mx-2'
+        )}
+      />
 
       {/* User navigation */}
       <div className="space-y-1">
-        {updatedUserNavItems.map((item) => renderNavigationItem(item))}
+        {updatedUserNavItems.map(item => renderNavigationItem(item))}
       </div>
 
       {/* Collapsed tooltip helper */}

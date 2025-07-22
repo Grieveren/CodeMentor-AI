@@ -3,7 +3,9 @@ import { Button } from '@/components/ui/Button';
 import { config } from '@/utils/config';
 
 // GitHub and Google icons as SVG components
-const GitHubIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" }) => (
+const GitHubIcon: React.FC<{ className?: string }> = ({
+  className = 'w-5 h-5',
+}) => (
   <svg className={className} fill="currentColor" viewBox="0 0 20 20">
     <path
       fillRule="evenodd"
@@ -13,7 +15,9 @@ const GitHubIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" })
   </svg>
 );
 
-const GoogleIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" }) => (
+const GoogleIcon: React.FC<{ className?: string }> = ({
+  className = 'w-5 h-5',
+}) => (
   <svg className={className} viewBox="0 0 24 24">
     <path
       fill="#4285F4"
@@ -46,14 +50,14 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
   onOAuthStart,
   onOAuthError,
 }) => {
-  const handleOAuthLogin = (provider: 'github' | 'google') => {
-    onOAuthStart?.(provider);
+  const handleOAuthLogin = (_provider: 'github' | 'google') => {
+    onOAuthStart?.(_provider);
 
     try {
       // Construct OAuth URL based on provider
       let oauthUrl: string;
-      
-      if (provider === 'github') {
+
+      if (_provider === 'github') {
         if (!config.auth.githubClientId) {
           throw new Error('GitHub OAuth is not configured');
         }
@@ -80,19 +84,22 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
 
       // Store the current location for redirect after auth
       sessionStorage.setItem('oauth_redirect_url', window.location.pathname);
-      
+
       // Redirect to OAuth provider
       window.location.href = oauthUrl;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'OAuth login failed';
+    } catch (_error) {
+      const errorMessage =
+        _error instanceof Error ? _error.message : 'OAuth login failed';
       onOAuthError?.(errorMessage);
     }
   };
 
   // Generate random state for OAuth security
   const generateRandomState = (): string => {
-    return Math.random().toString(36).substring(2, 15) + 
-           Math.random().toString(36).substring(2, 15);
+    return (
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15)
+    );
   };
 
   return (
@@ -133,20 +140,20 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
       </div>
 
       {/* OAuth Configuration Warning (Development Only) */}
-      {config.app.environment === 'development' && 
-       (!config.auth.githubClientId || !config.auth.googleClientId) && (
-        <div className="text-xs text-gray-500 text-center mt-2">
-          {!config.auth.githubClientId && !config.auth.googleClientId && (
-            'OAuth providers not configured. Set VITE_GITHUB_CLIENT_ID and VITE_GOOGLE_CLIENT_ID.'
-          )}
-          {!config.auth.githubClientId && config.auth.googleClientId && (
-            'GitHub OAuth not configured. Set VITE_GITHUB_CLIENT_ID.'
-          )}
-          {config.auth.githubClientId && !config.auth.googleClientId && (
-            'Google OAuth not configured. Set VITE_GOOGLE_CLIENT_ID.'
-          )}
-        </div>
-      )}
+      {config.app.environment === 'development' &&
+        (!config.auth.githubClientId || !config.auth.googleClientId) && (
+          <div className="text-xs text-gray-500 text-center mt-2">
+            {!config.auth.githubClientId &&
+              !config.auth.googleClientId &&
+              'OAuth providers not configured. Set VITE_GITHUB_CLIENT_ID and VITE_GOOGLE_CLIENT_ID.'}
+            {!config.auth.githubClientId &&
+              config.auth.googleClientId &&
+              'GitHub OAuth not configured. Set VITE_GITHUB_CLIENT_ID.'}
+            {config.auth.githubClientId &&
+              !config.auth.googleClientId &&
+              'Google OAuth not configured. Set VITE_GOOGLE_CLIENT_ID.'}
+          </div>
+        )}
     </div>
   );
 };

@@ -60,7 +60,10 @@ export class AIService {
    * Request AI code review
    */
   async reviewCode(request: CodeReviewRequest): Promise<CodeReview> {
-    const response = await apiClient.post<CodeReview>('/api/ai/review', request);
+    const response = await apiClient.post<CodeReview>(
+      '/api/ai/review',
+      request
+    );
     return response.data;
   }
 
@@ -76,7 +79,10 @@ export class AIService {
    * Send message to AI chat
    */
   async sendChatMessage(request: ChatRequest): Promise<ChatResponse> {
-    const response = await apiClient.post<ChatResponse>('/api/ai/chat', request);
+    const response = await apiClient.post<ChatResponse>(
+      '/api/ai/chat',
+      request
+    );
     return response.data;
   }
 
@@ -84,13 +90,15 @@ export class AIService {
    * Get streaming chat response
    * Returns a ReadableStream for real-time message streaming
    */
-  async sendChatMessageStream(request: ChatRequest): Promise<ReadableStream<Uint8Array>> {
+  async sendChatMessageStream(
+    request: ChatRequest
+  ): Promise<ReadableStream<Uint8Array>> {
     const axiosInstance = apiClient.getInstance();
-    
+
     const response = await axiosInstance.post('/api/ai/chat/stream', request, {
       responseType: 'stream',
       headers: {
-        'Accept': 'text/event-stream',
+        Accept: 'text/event-stream',
         'Cache-Control': 'no-cache',
       },
     });
@@ -99,8 +107,8 @@ export class AIService {
     const reader = response.data;
     return new ReadableStream({
       start(controller) {
-        reader.on('data', (chunk: Buffer) => {
-          controller.enqueue(new Uint8Array(chunk));
+        reader.on('data', (chunk: Uint8Array) => {
+          controller.enqueue(chunk);
         });
 
         reader.on('end', () => {
@@ -117,7 +125,10 @@ export class AIService {
   /**
    * Get conversation history
    */
-  async getChatHistory(conversationId: string, limit?: number): Promise<ChatMessage[]> {
+  async getChatHistory(
+    conversationId: string,
+    limit?: number
+  ): Promise<ChatMessage[]> {
     const queryParams = limit ? `?limit=${limit}` : '';
     const response = await apiClient.get<ChatMessage[]>(
       `/api/ai/chat/${conversationId}/history${queryParams}`
@@ -136,7 +147,10 @@ export class AIService {
    * Get explanation for a programming concept
    */
   async explainConcept(request: ExplanationRequest): Promise<string> {
-    const response = await apiClient.post<{ explanation: string }>('/api/ai/explain', request);
+    const response = await apiClient.post<{ explanation: string }>(
+      '/api/ai/explain',
+      request
+    );
     return response.data.explanation;
   }
 
@@ -144,7 +158,10 @@ export class AIService {
    * Get code explanation
    */
   async explainCode(request: CodeExplanationRequest): Promise<string> {
-    const response = await apiClient.post<{ explanation: string }>('/api/ai/explain-code', request);
+    const response = await apiClient.post<{ explanation: string }>(
+      '/api/ai/explain-code',
+      request
+    );
     return response.data.explanation;
   }
 
@@ -155,7 +172,9 @@ export class AIService {
     concept: string,
     language: ProgrammingLanguage,
     difficulty?: 'beginner' | 'intermediate' | 'advanced'
-  ): Promise<{ examples: Array<{ title: string; code: string; explanation: string }> }> {
+  ): Promise<{
+    examples: Array<{ title: string; code: string; explanation: string }>;
+  }> {
     const response = await apiClient.post<{
       examples: Array<{ title: string; code: string; explanation: string }>;
     }>('/api/ai/examples', {
@@ -174,11 +193,14 @@ export class AIService {
     language: ProgrammingLanguage,
     focusArea?: 'performance' | 'readability' | 'security' | 'best-practices'
   ): Promise<{ suggestions: string[] }> {
-    const response = await apiClient.post<{ suggestions: string[] }>('/api/ai/suggestions', {
-      code,
-      language,
-      focusArea,
-    });
+    const response = await apiClient.post<{ suggestions: string[] }>(
+      '/api/ai/suggestions',
+      {
+        code,
+        language,
+        focusArea,
+      }
+    );
     return response.data;
   }
 

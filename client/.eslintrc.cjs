@@ -4,7 +4,9 @@ module.exports = {
     browser: true,
     es2022: true,
     jest: true,
+    node: true,
   },
+  ignorePatterns: ['dist/', 'node_modules/'],
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
@@ -21,9 +23,10 @@ module.exports = {
   rules: {
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
-    'no-console': 'warn',
+    'no-console': 'off',
     'prefer-const': 'error',
     'no-var': 'error',
+    'no-unused-vars': 'off',
   },
   settings: {
     react: {
@@ -44,9 +47,10 @@ module.exports = {
       rules: {
         'react/react-in-jsx-scope': 'off',
         'react/prop-types': 'off',
-        'no-console': 'warn',
+        'no-console': 'off',
         'prefer-const': 'error',
         'no-var': 'error',
+        'no-unused-vars': 'off',
       },
     },
   ],

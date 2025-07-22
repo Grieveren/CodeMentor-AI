@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { 
-  FunnelIcon, 
+import {
   XMarkIcon,
   MagnifyingGlassIcon,
-  AdjustmentsHorizontalIcon 
+  AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -58,14 +57,16 @@ export const LessonFilters: React.FC<LessonFiltersProps> = ({
   };
 
   const handleCategoryChange = (categoryId: string) => {
-    onFiltersChange({ 
-      category: filters.category === categoryId ? undefined : categoryId 
+    onFiltersChange({
+      category: filters.category === categoryId ? undefined : categoryId,
     });
   };
 
-  const handleDifficultyChange = (difficulty: 'beginner' | 'intermediate' | 'advanced') => {
-    onFiltersChange({ 
-      difficulty: filters.difficulty === difficulty ? undefined : difficulty 
+  const handleDifficultyChange = (
+    difficulty: 'beginner' | 'intermediate' | 'advanced'
+  ) => {
+    onFiltersChange({
+      difficulty: filters.difficulty === difficulty ? undefined : difficulty,
     });
   };
 
@@ -82,37 +83,42 @@ export const LessonFilters: React.FC<LessonFiltersProps> = ({
     const newTags = currentTags.includes(tag)
       ? currentTags.filter(t => t !== tag)
       : [...currentTags, tag];
-    
-    onFiltersChange({ 
-      tags: newTags.length > 0 ? newTags : undefined 
+
+    onFiltersChange({
+      tags: newTags.length > 0 ? newTags : undefined,
     });
   };
 
   const handleProgressFilterChange = (type: 'completed' | 'inProgress') => {
     if (type === 'completed') {
-      onFiltersChange({ 
+      onFiltersChange({
         showCompleted: !filters.showCompleted,
-        showInProgress: filters.showCompleted ? filters.showInProgress : false
+        showInProgress: filters.showCompleted ? filters.showInProgress : false,
       });
     } else {
-      onFiltersChange({ 
+      onFiltersChange({
         showInProgress: !filters.showInProgress,
-        showCompleted: filters.showInProgress ? filters.showCompleted : false
+        showCompleted: filters.showInProgress ? filters.showCompleted : false,
       });
     }
   };
 
   const hasActiveFilters = Boolean(
-    filters.category || 
-    filters.difficulty || 
-    filters.search || 
-    (filters.tags && filters.tags.length > 0) ||
-    filters.showCompleted ||
-    filters.showInProgress
+    filters.category ||
+      filters.difficulty ||
+      filters.search ||
+      (filters.tags && filters.tags.length > 0) ||
+      filters.showCompleted ||
+      filters.showInProgress
   );
 
   return (
-    <div className={cn('bg-white border border-gray-200 rounded-lg p-4', className)}>
+    <div
+      className={cn(
+        'bg-white border border-gray-200 rounded-lg p-4',
+        className
+      )}
+    >
       {/* Search Bar */}
       <form onSubmit={handleSearchSubmit} className="mb-4">
         <Input
@@ -155,7 +161,9 @@ export const LessonFilters: React.FC<LessonFiltersProps> = ({
                 filters.tags?.length || 0,
                 filters.showCompleted && 1,
                 filters.showInProgress && 1,
-              ].filter(Boolean).reduce((a, b) => (a as number) + (b as number), 0)}
+              ]
+                .filter(Boolean)
+                .reduce((a, b) => (a as number) + (b as number), 0)}
             </Badge>
           )}
         </Button>
@@ -179,10 +187,12 @@ export const LessonFilters: React.FC<LessonFiltersProps> = ({
           <div>
             <h4 className="text-sm font-medium text-gray-900 mb-3">Category</h4>
             <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
+              {categories.map(category => (
                 <Button
                   key={category.id}
-                  variant={filters.category === category.id ? 'primary' : 'outline'}
+                  variant={
+                    filters.category === category.id ? 'primary' : 'outline'
+                  }
                   size="sm"
                   onClick={() => handleCategoryChange(category.id)}
                 >
@@ -194,12 +204,16 @@ export const LessonFilters: React.FC<LessonFiltersProps> = ({
 
           {/* Difficulty */}
           <div>
-            <h4 className="text-sm font-medium text-gray-900 mb-3">Difficulty</h4>
+            <h4 className="text-sm font-medium text-gray-900 mb-3">
+              Difficulty
+            </h4>
             <div className="flex flex-wrap gap-2">
-              {difficultyOptions.map((option) => (
+              {difficultyOptions.map(option => (
                 <Button
                   key={option.value}
-                  variant={filters.difficulty === option.value ? 'primary' : 'outline'}
+                  variant={
+                    filters.difficulty === option.value ? 'primary' : 'outline'
+                  }
                   size="sm"
                   onClick={() => handleDifficultyChange(option.value)}
                 >
@@ -211,7 +225,9 @@ export const LessonFilters: React.FC<LessonFiltersProps> = ({
 
           {/* Progress Status */}
           <div>
-            <h4 className="text-sm font-medium text-gray-900 mb-3">Progress Status</h4>
+            <h4 className="text-sm font-medium text-gray-900 mb-3">
+              Progress Status
+            </h4>
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={filters.showCompleted ? 'success' : 'outline'}
@@ -233,12 +249,16 @@ export const LessonFilters: React.FC<LessonFiltersProps> = ({
           {/* Sort Options */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h4 className="text-sm font-medium text-gray-900 mb-3">Sort By</h4>
+              <h4 className="text-sm font-medium text-gray-900 mb-3">
+                Sort By
+              </h4>
               <div className="flex flex-wrap gap-2">
-                {sortOptions.map((option) => (
+                {sortOptions.map(option => (
                   <Button
                     key={option.value}
-                    variant={filters.sortBy === option.value ? 'primary' : 'outline'}
+                    variant={
+                      filters.sortBy === option.value ? 'primary' : 'outline'
+                    }
                     size="sm"
                     onClick={() => handleSortChange(option.value)}
                   >
@@ -251,10 +271,12 @@ export const LessonFilters: React.FC<LessonFiltersProps> = ({
             <div>
               <h4 className="text-sm font-medium text-gray-900 mb-3">Order</h4>
               <div className="flex flex-wrap gap-2">
-                {sortOrderOptions.map((option) => (
+                {sortOrderOptions.map(option => (
                   <Button
                     key={option.value}
-                    variant={filters.sortOrder === option.value ? 'primary' : 'outline'}
+                    variant={
+                      filters.sortOrder === option.value ? 'primary' : 'outline'
+                    }
                     size="sm"
                     onClick={() => handleSortOrderChange(option.value)}
                   >
@@ -272,27 +294,31 @@ export const LessonFilters: React.FC<LessonFiltersProps> = ({
         <div className="mt-4 pt-4 border-t border-gray-200">
           <div className="flex flex-wrap gap-2">
             {filters.category && (
-              <Badge 
-                variant="primary" 
+              <Badge
+                variant="primary"
                 className="cursor-pointer"
                 onClick={() => onFiltersChange({ category: undefined })}
               >
-                Category: {categories.find(c => c.id === filters.category)?.name}
+                Category:{' '}
+                {categories.find(c => c.id === filters.category)?.name}
                 <XMarkIcon className="h-3 w-3 ml-1" />
               </Badge>
             )}
             {filters.difficulty && (
-              <Badge 
+              <Badge
                 variant="primary"
                 className="cursor-pointer"
                 onClick={() => onFiltersChange({ difficulty: undefined })}
               >
-                {difficultyOptions.find(d => d.value === filters.difficulty)?.label}
+                {
+                  difficultyOptions.find(d => d.value === filters.difficulty)
+                    ?.label
+                }
                 <XMarkIcon className="h-3 w-3 ml-1" />
               </Badge>
             )}
             {filters.showCompleted && (
-              <Badge 
+              <Badge
                 variant="success"
                 className="cursor-pointer"
                 onClick={() => onFiltersChange({ showCompleted: false })}
@@ -302,7 +328,7 @@ export const LessonFilters: React.FC<LessonFiltersProps> = ({
               </Badge>
             )}
             {filters.showInProgress && (
-              <Badge 
+              <Badge
                 variant="warning"
                 className="cursor-pointer"
                 onClick={() => onFiltersChange({ showInProgress: false })}
@@ -311,8 +337,8 @@ export const LessonFilters: React.FC<LessonFiltersProps> = ({
                 <XMarkIcon className="h-3 w-3 ml-1" />
               </Badge>
             )}
-            {filters.tags?.map((tag) => (
-              <Badge 
+            {filters.tags?.map(tag => (
+              <Badge
                 key={tag}
                 variant="outline"
                 className="cursor-pointer"

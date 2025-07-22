@@ -1,3 +1,4 @@
+import React from 'react';
 import { ChevronRightIcon, HomeIcon } from '@heroicons/react/24/outline';
 import { cn } from '../../utils/cn';
 
@@ -19,9 +20,10 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   className,
 }) => {
   // Add home item if showHome is true and items don't start with home
-  const breadcrumbItems = showHome && items[0]?.label !== 'Home' 
-    ? [{ label: 'Home', href: '/' }, ...items]
-    : items;
+  const breadcrumbItems =
+    showHome && items[0]?.label !== 'Home'
+      ? [{ label: 'Home', href: '/' }, ...items]
+      : items;
 
   // Mark the last item as current if not already marked
   const processedItems = breadcrumbItems.map((item, index) => ({
@@ -40,13 +42,16 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
                 aria-hidden="true"
               />
             )}
-            
+
             <div className="flex items-center">
               {/* Home icon for first item if it's home */}
               {index === 0 && item.label === 'Home' && (
-                <HomeIcon className="h-4 w-4 text-gray-400 mr-1" aria-hidden="true" />
+                <HomeIcon
+                  className="h-4 w-4 text-gray-400 mr-1"
+                  aria-hidden="true"
+                />
               )}
-              
+
               {item.href && !item.current ? (
                 <a
                   href={item.href}
@@ -59,9 +64,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
                 <span
                   className={cn(
                     'text-sm font-medium',
-                    item.current
-                      ? 'text-gray-900'
-                      : 'text-gray-500'
+                    item.current ? 'text-gray-900' : 'text-gray-500'
                   )}
                   aria-current={item.current ? 'page' : undefined}
                 >

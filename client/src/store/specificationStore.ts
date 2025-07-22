@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { validationService } from '@/services/validationService';
-import type { 
+import type {
   SpecificationProject,
   SpecificationPhase,
   RequirementDocument,
@@ -9,7 +9,7 @@ import type {
   TaskDocument,
   ValidationResult,
   ProjectStatus,
-  SpecificationDocument
+  SpecificationDocument,
 } from '@/types/specifications';
 
 // Project creation data
@@ -86,65 +86,81 @@ interface SpecificationStore {
     design: DesignDocument | null;
     tasks: TaskDocument | null;
   };
-  
+
   // Validation and completion tracking
   phaseValidation: Record<SpecificationPhase, PhaseValidationResult | null>;
   unsavedChanges: boolean;
   lastSaved: Date | null;
-  
+
   // Configuration
   autoSave: AutoSaveConfig;
-  
+
   // Loading and error states
   loading: SpecificationLoadingState;
   errors: SpecificationErrorState;
-  
+
   // Project management actions
-  createProject: (projectData: CreateProjectData) => Promise<SpecificationProject>;
+  createProject: (
+    projectData: CreateProjectData
+  ) => Promise<SpecificationProject>;
   updateProject: (projectId: string, updates: ProjectUpdates) => Promise<void>;
   deleteProject: (projectId: string) => Promise<void>;
   fetchProjects: () => Promise<void>;
   fetchProjectById: (projectId: string) => Promise<void>;
   setCurrentProject: (project: SpecificationProject | null) => void;
-  
+
   // Phase management actions
   setCurrentPhase: (phase: SpecificationPhase) => void;
   validatePhase: (phase: SpecificationPhase) => Promise<PhaseValidationResult>;
   canTransitionToPhase: (targetPhase: SpecificationPhase) => boolean;
   transitionToPhase: (targetPhase: SpecificationPhase) => Promise<void>;
   validatePhaseCompletion: (phase: SpecificationPhase) => Promise<boolean>;
-  
+
   // Document management actions
-  updateRequirements: (content: string, metadata?: Record<string, any>) => Promise<void>;
-  updateDesign: (content: string, metadata?: Record<string, any>) => Promise<void>;
-  updateTasks: (content: string, metadata?: Record<string, any>) => Promise<void>;
+  updateRequirements: (
+    content: string,
+    metadata?: Record<string, any>
+  ) => Promise<void>;
+  updateDesign: (
+    content: string,
+    metadata?: Record<string, any>
+  ) => Promise<void>;
+  updateTasks: (
+    content: string,
+    metadata?: Record<string, any>
+  ) => Promise<void>;
   saveDocument: (type: 'requirements' | 'design' | 'tasks') => Promise<void>;
   saveAllDocuments: () => Promise<void>;
-  
+
   // Auto-save management
   enableAutoSave: () => void;
   disableAutoSave: () => void;
   configureAutoSave: (config: Partial<AutoSaveConfig>) => void;
   markUnsaved: () => void;
   markSaved: () => void;
-  
+
   // Validation actions
-  validateDocument: (type: 'requirements' | 'design' | 'tasks') => Promise<ValidationResult[]>;
+  validateDocument: (
+    type: 'requirements' | 'design' | 'tasks'
+  ) => Promise<ValidationResult[]>;
   validateAllDocuments: () => Promise<Record<string, ValidationResult[]>>;
   clearValidationResults: (phase?: SpecificationPhase) => void;
-  
+
   // Project persistence
   exportProject: (projectId: string) => Promise<string>;
   importProject: (projectData: string) => Promise<SpecificationProject>;
-  
+
   // Error handling actions
   clearError: (key: keyof SpecificationErrorState) => void;
   clearAllErrors: () => void;
-  
+
   // Internal actions
   setLoading: (key: keyof SpecificationLoadingState, loading: boolean) => void;
   setError: (key: keyof SpecificationErrorState, error: string | null) => void;
-  updatePhaseValidation: (phase: SpecificationPhase, validation: PhaseValidationResult) => void;
+  updatePhaseValidation: (
+    phase: SpecificationPhase,
+    validation: PhaseValidationResult
+  ) => void;
 }
 
 // Initial states
@@ -172,7 +188,10 @@ const initialAutoSaveConfig: AutoSaveConfig = {
   debounceDelay: 2000, // 2 seconds
 };
 
-const initialPhaseValidation: Record<SpecificationPhase, PhaseValidationResult | null> = {
+const initialPhaseValidation: Record<
+  SpecificationPhase,
+  PhaseValidationResult | null
+> = {
   requirements: null,
   design: null,
   tasks: null,
@@ -182,8 +201,8 @@ const initialPhaseValidation: Record<SpecificationPhase, PhaseValidationResult |
 };
 
 // Auto-save timer reference
-let autoSaveTimer: NodeJS.Timeout | null = null;
-let debounceTimer: NodeJS.Timeout | null = null;
+let autoSaveTimer: number | null = null;
+let debounceTimer: number | null = null;
 
 // Create the specification store with persistence
 export const useSpecificationStore = create<SpecificationStore>()(
@@ -198,7 +217,7 @@ export const useSpecificationStore = create<SpecificationStore>()(
         design: null,
         tasks: null,
       },
-      
+
       phaseValidation: initialPhaseValidation,
       unsavedChanges: false,
       lastSaved: null,
@@ -211,7 +230,7 @@ export const useSpecificationStore = create<SpecificationStore>()(
         const { setLoading, setError } = get();
         setLoading('projects', true);
         setError('projects', null);
-        
+
         try {
           // TODO: Replace with actual API call
           const newProject: SpecificationProject = {
@@ -254,17 +273,18 @@ export const useSpecificationStore = create<SpecificationStore>()(
             createdAt: new Date(),
             updatedAt: new Date(),
           };
-          
-          set((state) => ({
+
+          set(state => ({
             ...state,
             projects: [...state.projects, newProject],
             currentProject: newProject,
             currentPhase: 'requirements',
           }));
-          
+
           return newProject;
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to create project';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Failed to create project';
           setError('projects', errorMessage);
           throw error;
         } finally {
@@ -276,21 +296,23 @@ export const useSpecificationStore = create<SpecificationStore>()(
         const { setLoading, setError } = get();
         setLoading('currentProject', true);
         setError('currentProject', null);
-        
+
         try {
           // TODO: Replace with actual API call
-          set((state) => ({
-            projects: state.projects.map((project) =>
+          set(state => ({
+            projects: state.projects.map(project =>
               project.id === projectId
                 ? { ...project, ...updates, updatedAt: new Date() }
                 : project
             ),
-            currentProject: state.currentProject?.id === projectId
-              ? { ...state.currentProject, ...updates, updatedAt: new Date() }
-              : state.currentProject,
+            currentProject:
+              state.currentProject?.id === projectId
+                ? { ...state.currentProject, ...updates, updatedAt: new Date() }
+                : state.currentProject,
           }));
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to update project';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Failed to update project';
           setError('currentProject', errorMessage);
           throw error;
         } finally {
@@ -302,15 +324,21 @@ export const useSpecificationStore = create<SpecificationStore>()(
         const { setLoading, setError } = get();
         setLoading('projects', true);
         setError('projects', null);
-        
+
         try {
           // TODO: Replace with actual API call
-          set((state) => ({
-            projects: state.projects.filter((project) => project.id !== projectId),
-            currentProject: state.currentProject?.id === projectId ? null : state.currentProject,
+          set(state => ({
+            projects: state.projects.filter(
+              project => project.id !== projectId
+            ),
+            currentProject:
+              state.currentProject?.id === projectId
+                ? null
+                : state.currentProject,
           }));
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to delete project';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Failed to delete project';
           setError('projects', errorMessage);
           throw error;
         } finally {
@@ -322,14 +350,15 @@ export const useSpecificationStore = create<SpecificationStore>()(
         const { setLoading, setError } = get();
         setLoading('projects', true);
         setError('projects', null);
-        
+
         try {
           // TODO: Replace with actual API call
           // For now, return existing projects from state
           const projects = get().projects;
           set({ projects });
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to fetch projects';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Failed to fetch projects';
           setError('projects', errorMessage);
         } finally {
           setLoading('projects', false);
@@ -340,17 +369,18 @@ export const useSpecificationStore = create<SpecificationStore>()(
         const { setLoading, setError } = get();
         setLoading('currentProject', true);
         setError('currentProject', null);
-        
+
         try {
           // TODO: Replace with actual API call
-          const project = get().projects.find((p) => p.id === projectId);
+          const project = get().projects.find(p => p.id === projectId);
           if (project) {
             set({ currentProject: project });
           } else {
             throw new Error('Project not found');
           }
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to fetch project';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Failed to fetch project';
           setError('currentProject', errorMessage);
         } finally {
           setLoading('currentProject', false);
@@ -358,7 +388,7 @@ export const useSpecificationStore = create<SpecificationStore>()(
       },
 
       setCurrentProject: (project: SpecificationProject | null) => {
-        set({ 
+        set({
           currentProject: project,
           currentPhase: project?.currentPhase || 'requirements',
           documents: {
@@ -382,16 +412,21 @@ export const useSpecificationStore = create<SpecificationStore>()(
       },
 
       validatePhase: async (phase: SpecificationPhase) => {
-        const { setLoading, setError, updatePhaseValidation, documents } = get();
+        const { setLoading, setError, updatePhaseValidation, documents } =
+          get();
         setLoading('validation', true);
         setError('validation', null);
-        
+
         try {
-          const validation = await validationService.validatePhase(phase, documents);
+          const validation = await validationService.validatePhase(
+            phase,
+            documents
+          );
           updatePhaseValidation(phase, validation);
           return validation;
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Validation failed';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Validation failed';
           setError('validation', errorMessage);
           throw error;
         } finally {
@@ -401,25 +436,25 @@ export const useSpecificationStore = create<SpecificationStore>()(
 
       canTransitionToPhase: (targetPhase: SpecificationPhase) => {
         const { currentPhase, phaseValidation } = get();
-        
+
         // Define phase order
         const phaseOrder: SpecificationPhase[] = [
           'requirements',
-          'design', 
+          'design',
           'tasks',
           'implementation',
           'review',
-          'completed'
+          'completed',
         ];
-        
+
         const currentIndex = phaseOrder.indexOf(currentPhase);
         const targetIndex = phaseOrder.indexOf(targetPhase);
-        
+
         // Can always go to previous phases
         if (targetIndex <= currentIndex) {
           return true;
         }
-        
+
         // Can only advance if previous phases are complete
         for (let i = 0; i < targetIndex; i++) {
           const phase = phaseOrder[i];
@@ -428,24 +463,28 @@ export const useSpecificationStore = create<SpecificationStore>()(
             return false;
           }
         }
-        
+
         return true;
       },
 
       transitionToPhase: async (targetPhase: SpecificationPhase) => {
-        const { setLoading, setError, canTransitionToPhase, setCurrentPhase } = get();
-        
+        const { setLoading, setError, canTransitionToPhase, setCurrentPhase } =
+          get();
+
         if (!canTransitionToPhase(targetPhase)) {
-          throw new Error(`Cannot transition to ${targetPhase}. Previous phases must be completed.`);
+          throw new Error(
+            `Cannot transition to ${targetPhase}. Previous phases must be completed.`
+          );
         }
-        
+
         setLoading('phaseTransition', true);
         setError('phaseTransition', null);
-        
+
         try {
           setCurrentPhase(targetPhase);
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Phase transition failed';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Phase transition failed';
           setError('phaseTransition', errorMessage);
           throw error;
         } finally {
@@ -459,12 +498,15 @@ export const useSpecificationStore = create<SpecificationStore>()(
       },
 
       // Document management actions
-      updateRequirements: async (content: string, metadata?: Record<string, any>) => {
+      updateRequirements: async (
+        content: string,
+        metadata?: Record<string, any>
+      ) => {
         const { currentProject, markUnsaved } = get();
         if (!currentProject) return;
-        
+
         // TODO: Replace with actual document update logic
-        set((state) => ({
+        set(state => ({
           documents: {
             ...state.documents,
             requirements: {
@@ -491,16 +533,16 @@ export const useSpecificationStore = create<SpecificationStore>()(
             } as RequirementDocument,
           },
         }));
-        
+
         markUnsaved();
       },
 
       updateDesign: async (content: string, metadata?: Record<string, any>) => {
         const { currentProject, markUnsaved } = get();
         if (!currentProject) return;
-        
+
         // TODO: Replace with actual document update logic
-        set((state) => ({
+        set(state => ({
           documents: {
             ...state.documents,
             design: {
@@ -527,16 +569,16 @@ export const useSpecificationStore = create<SpecificationStore>()(
             } as DesignDocument,
           },
         }));
-        
+
         markUnsaved();
       },
 
       updateTasks: async (content: string, metadata?: Record<string, any>) => {
         const { currentProject, markUnsaved } = get();
         if (!currentProject) return;
-        
+
         // TODO: Replace with actual document update logic
-        set((state) => ({
+        set(state => ({
           documents: {
             ...state.documents,
             tasks: {
@@ -563,25 +605,26 @@ export const useSpecificationStore = create<SpecificationStore>()(
             } as TaskDocument,
           },
         }));
-        
+
         markUnsaved();
       },
 
       saveDocument: async (type: 'requirements' | 'design' | 'tasks') => {
         const { setLoading, setError, documents, markSaved } = get();
         const document = documents[type];
-        
+
         if (!document) return;
-        
+
         setLoading('saving', true);
         setError('saving', null);
-        
+
         try {
           // TODO: Replace with actual API call
-          await new Promise((resolve) => setTimeout(resolve, 100)); // Simulate API call
+          await new Promise(resolve => setTimeout(resolve, 100)); // Simulate API call
           markSaved();
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to save document';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Failed to save document';
           setError('saving', errorMessage);
           throw error;
         } finally {
@@ -592,29 +635,30 @@ export const useSpecificationStore = create<SpecificationStore>()(
       saveAllDocuments: async () => {
         const { saveDocument, documents } = get();
         const savePromises: Promise<void>[] = [];
-        
-        if (documents.requirements) savePromises.push(saveDocument('requirements'));
+
+        if (documents.requirements)
+          savePromises.push(saveDocument('requirements'));
         if (documents.design) savePromises.push(saveDocument('design'));
         if (documents.tasks) savePromises.push(saveDocument('tasks'));
-        
+
         await Promise.all(savePromises);
       },
 
       // Auto-save management
       enableAutoSave: () => {
         const { autoSave, saveAllDocuments, unsavedChanges } = get();
-        
+
         if (autoSaveTimer) {
           clearInterval(autoSaveTimer);
         }
-        
+
         autoSaveTimer = setInterval(() => {
           if (unsavedChanges) {
             saveAllDocuments().catch(console.error);
           }
         }, autoSave.interval);
-        
-        set((state) => ({
+
+        set(state => ({
           autoSave: { ...state.autoSave, enabled: true },
         }));
       },
@@ -624,17 +668,17 @@ export const useSpecificationStore = create<SpecificationStore>()(
           clearInterval(autoSaveTimer);
           autoSaveTimer = null;
         }
-        
-        set((state) => ({
+
+        set(state => ({
           autoSave: { ...state.autoSave, enabled: false },
         }));
       },
 
       configureAutoSave: (config: Partial<AutoSaveConfig>) => {
-        set((state) => ({
+        set(state => ({
           autoSave: { ...state.autoSave, ...config },
         }));
-        
+
         // Restart auto-save with new configuration
         if (get().autoSave.enabled) {
           get().disableAutoSave();
@@ -644,12 +688,12 @@ export const useSpecificationStore = create<SpecificationStore>()(
 
       markUnsaved: () => {
         set({ unsavedChanges: true });
-        
+
         // Debounced auto-save trigger
         if (debounceTimer) {
           clearTimeout(debounceTimer);
         }
-        
+
         const { autoSave } = get();
         if (autoSave.enabled) {
           debounceTimer = setTimeout(() => {
@@ -659,7 +703,7 @@ export const useSpecificationStore = create<SpecificationStore>()(
       },
 
       markSaved: () => {
-        set({ 
+        set({
           unsavedChanges: false,
           lastSaved: new Date(),
         });
@@ -669,36 +713,46 @@ export const useSpecificationStore = create<SpecificationStore>()(
       validateDocument: async (type: 'requirements' | 'design' | 'tasks') => {
         const { setLoading, setError, documents } = get();
         const document = documents[type];
-        
+
         if (!document) return [];
-        
+
         setLoading('validation', true);
         setError('validation', null);
-        
+
         try {
           let validationResults: ValidationResult[] = [];
-          
+
           switch (type) {
             case 'requirements':
               if (document) {
-                validationResults = await validationService.validateRequirements(document as RequirementDocument);
+                validationResults =
+                  await validationService.validateRequirements(
+                    document as RequirementDocument
+                  );
               }
               break;
             case 'design':
               if (document) {
-                validationResults = await validationService.validateDesign(document as DesignDocument);
+                validationResults = await validationService.validateDesign(
+                  document as DesignDocument
+                );
               }
               break;
             case 'tasks':
               if (document) {
-                validationResults = await validationService.validateTasks(document as TaskDocument);
+                validationResults = await validationService.validateTasks(
+                  document as TaskDocument
+                );
               }
               break;
           }
-          
+
           return validationResults;
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Document validation failed';
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Document validation failed';
           setError('validation', errorMessage);
           return [];
         } finally {
@@ -709,7 +763,7 @@ export const useSpecificationStore = create<SpecificationStore>()(
       validateAllDocuments: async () => {
         const { validateDocument, documents } = get();
         const results: Record<string, ValidationResult[]> = {};
-        
+
         if (documents.requirements) {
           results.requirements = await validateDocument('requirements');
         }
@@ -719,13 +773,13 @@ export const useSpecificationStore = create<SpecificationStore>()(
         if (documents.tasks) {
           results.tasks = await validateDocument('tasks');
         }
-        
+
         return results;
       },
 
       clearValidationResults: (phase?: SpecificationPhase) => {
         if (phase) {
-          set((state) => ({
+          set(state => ({
             phaseValidation: {
               ...state.phaseValidation,
               [phase]: null,
@@ -739,19 +793,19 @@ export const useSpecificationStore = create<SpecificationStore>()(
       // Project persistence
       exportProject: async (projectId: string) => {
         const { projects, documents } = get();
-        const project = projects.find((p) => p.id === projectId);
-        
+        const project = projects.find(p => p.id === projectId);
+
         if (!project) {
           throw new Error('Project not found');
         }
-        
+
         const exportData = {
           project,
           documents,
           exportedAt: new Date().toISOString(),
           version: '1.0',
         };
-        
+
         return JSON.stringify(exportData, null, 2);
       },
 
@@ -764,11 +818,11 @@ export const useSpecificationStore = create<SpecificationStore>()(
             createdAt: new Date(),
             updatedAt: new Date(),
           };
-          
-          set((state) => ({
+
+          set(state => ({
             projects: [...state.projects, project],
           }));
-          
+
           return project;
         } catch (error) {
           throw new Error('Invalid project data format');
@@ -777,7 +831,7 @@ export const useSpecificationStore = create<SpecificationStore>()(
 
       // Error handling actions
       clearError: (key: keyof SpecificationErrorState) => {
-        set((state) => ({
+        set(state => ({
           errors: { ...state.errors, [key]: null },
         }));
       },
@@ -788,19 +842,22 @@ export const useSpecificationStore = create<SpecificationStore>()(
 
       // Internal actions
       setLoading: (key: keyof SpecificationLoadingState, loading: boolean) => {
-        set((state) => ({
+        set(state => ({
           loading: { ...state.loading, [key]: loading },
         }));
       },
 
       setError: (key: keyof SpecificationErrorState, error: string | null) => {
-        set((state) => ({
+        set(state => ({
           errors: { ...state.errors, [key]: error },
         }));
       },
 
-      updatePhaseValidation: (phase: SpecificationPhase, validation: PhaseValidationResult) => {
-        set((state) => ({
+      updatePhaseValidation: (
+        phase: SpecificationPhase,
+        validation: PhaseValidationResult
+      ) => {
+        set(state => ({
           phaseValidation: {
             ...state.phaseValidation,
             [phase]: validation,
@@ -812,7 +869,7 @@ export const useSpecificationStore = create<SpecificationStore>()(
       name: 'specification-storage',
       storage: createJSONStorage(() => localStorage),
       // Persist essential project data and settings
-      partialize: (state) => ({
+      partialize: state => ({
         projects: state.projects,
         currentProject: state.currentProject,
         currentPhase: state.currentPhase,
