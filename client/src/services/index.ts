@@ -4,6 +4,8 @@ import { lessonsService } from './lessonsService';
 import { aiService } from './aiService';
 import { executionService } from './executionService';
 import { progressService } from './progressService';
+import { templatesService } from './templatesService';
+import { validationService } from './validationService';
 
 // Export API client
 export { apiClient, default as ApiClient } from './apiClient';
@@ -14,6 +16,8 @@ export { lessonsService, LessonsService } from './lessonsService';
 export { aiService, AIService } from './aiService';
 export { executionService, ExecutionService } from './executionService';
 export { progressService, ProgressService } from './progressService';
+export { templatesService, TemplatesService } from './templatesService';
+export { validationService, ValidationService } from './validationService';
 
 // Export service types
 export type {
@@ -50,6 +54,8 @@ export const api = {
   ai: aiService,
   execution: executionService,
   progress: progressService,
+  templates: templatesService,
+  validation: validationService,
 } as const;
 
 // Default export

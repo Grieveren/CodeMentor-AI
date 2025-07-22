@@ -11,6 +11,7 @@ export default {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '^monaco-editor$': '<rootDir>/src/__mocks__/monaco-editor.ts',
+    '^@/utils/config$': '<rootDir>/src/utils/__mocks__/config.ts',
   },
   setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
   testMatch: [
