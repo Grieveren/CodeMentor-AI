@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useEffect, ReactNode } from 'react';
 import { useSpecificationStore } from '@/store/specificationStore';
-import type { 
+import type {
   SpecificationProject,
   SpecificationPhase,
   RequirementDocument,
   DesignDocument,
   TaskDocument,
   ValidationResult,
-  PhaseValidationResult
+  PhaseValidationResult,
 } from '@/types/specifications';
 
 // Context value interface
@@ -20,52 +20,65 @@ interface SpecificationContextValue {
     design: DesignDocument | null;
     tasks: TaskDocument | null;
   };
-  
+
   // Validation and status
   phaseValidation: Record<SpecificationPhase, PhaseValidationResult | null>;
   unsavedChanges: boolean;
   lastSaved: Date | null;
-  
+
   // Loading states
   isLoading: boolean;
   isSaving: boolean;
   isValidating: boolean;
-  
+
   // Error states
   error: string | null;
-  
+
   // Project actions
   createProject: (projectData: any) => Promise<SpecificationProject>;
   setCurrentProject: (project: SpecificationProject | null) => void;
   updateProject: (projectId: string, updates: any) => Promise<void>;
-  
+
   // Phase actions
   setCurrentPhase: (phase: SpecificationPhase) => void;
   canTransitionToPhase: (targetPhase: SpecificationPhase) => boolean;
   transitionToPhase: (targetPhase: SpecificationPhase) => Promise<void>;
   validatePhase: (phase: SpecificationPhase) => Promise<PhaseValidationResult>;
-  
+
   // Document actions
-  updateRequirements: (content: string, metadata?: Record<string, any>) => Promise<void>;
-  updateDesign: (content: string, metadata?: Record<string, any>) => Promise<void>;
-  updateTasks: (content: string, metadata?: Record<string, any>) => Promise<void>;
+  updateRequirements: (
+    content: string,
+    metadata?: Record<string, any>
+  ) => Promise<void>;
+  updateDesign: (
+    content: string,
+    metadata?: Record<string, any>
+  ) => Promise<void>;
+  updateTasks: (
+    content: string,
+    metadata?: Record<string, any>
+  ) => Promise<void>;
   saveDocument: (type: 'requirements' | 'design' | 'tasks') => Promise<void>;
   saveAllDocuments: () => Promise<void>;
-  
+
   // Validation actions
-  validateDocument: (type: 'requirements' | 'design' | 'tasks') => Promise<ValidationResult[]>;
+  validateDocument: (
+    type: 'requirements' | 'design' | 'tasks'
+  ) => Promise<ValidationResult[]>;
   validateAllDocuments: () => Promise<Record<string, ValidationResult[]>>;
-  
+
   // Auto-save actions
   enableAutoSave: () => void;
   disableAutoSave: () => void;
-  
+
   // Utility actions
   clearError: () => void;
 }
 
 // Create the context
-const SpecificationContext = createContext<SpecificationContextValue | null>(null);
+const SpecificationContext = createContext<SpecificationContextValue | null>(
+  null
+);
 
 // Context provider props
 interface SpecificationProviderProps {
@@ -79,82 +92,92 @@ export const SpecificationProvider: React.FC<SpecificationProviderProps> = ({
   projectId,
 }) => {
   const store = useSpecificationStore();
-  
+
   // Auto-load project if projectId is provided
   useEffect(() => {
-    if (projectId && (!store.currentProject || store.currentProject.id !== projectId)) {
+    if (
+      projectId &&
+      (!store.currentProject || store.currentProject.id !== projectId)
+    ) {
       store.fetchProjectById(projectId).catch(console.error);
     }
-  }, [projectId, store.currentProject?.id]);
-  
+  }, [projectId, store]);
+
   // Enable auto-save by default
   useEffect(() => {
     if (store.autoSave.enabled) {
       store.enableAutoSave();
     }
-    
+
     // Cleanup on unmount
     return () => {
       store.disableAutoSave();
     };
-  }, []);
-  
+  }, [store]);
+
   // Compute derived state
-  const isLoading = store.loading.projects || store.loading.currentProject || store.loading.documents;
+  const isLoading =
+    store.loading.projects ||
+    store.loading.currentProject ||
+    store.loading.documents;
   const isSaving = store.loading.saving;
   const isValidating = store.loading.validation;
-  const error = store.errors.projects || store.errors.currentProject || store.errors.documents || store.errors.saving;
-  
+  const error =
+    store.errors.projects ||
+    store.errors.currentProject ||
+    store.errors.documents ||
+    store.errors.saving;
+
   // Context value
   const contextValue: SpecificationContextValue = {
     // Current state
     currentProject: store.currentProject,
     currentPhase: store.currentPhase,
     documents: store.documents,
-    
+
     // Validation and status
     phaseValidation: store.phaseValidation,
     unsavedChanges: store.unsavedChanges,
     lastSaved: store.lastSaved,
-    
+
     // Loading states
     isLoading,
     isSaving,
     isValidating,
-    
+
     // Error states
     error,
-    
+
     // Project actions
     createProject: store.createProject,
     setCurrentProject: store.setCurrentProject,
     updateProject: store.updateProject,
-    
+
     // Phase actions
     setCurrentPhase: store.setCurrentPhase,
     canTransitionToPhase: store.canTransitionToPhase,
     transitionToPhase: store.transitionToPhase,
     validatePhase: store.validatePhase,
-    
+
     // Document actions
     updateRequirements: store.updateRequirements,
     updateDesign: store.updateDesign,
     updateTasks: store.updateTasks,
     saveDocument: store.saveDocument,
     saveAllDocuments: store.saveAllDocuments,
-    
+
     // Validation actions
     validateDocument: store.validateDocument,
     validateAllDocuments: store.validateAllDocuments,
-    
+
     // Auto-save actions
     enableAutoSave: store.enableAutoSave,
     disableAutoSave: store.disableAutoSave,
-    
+
     // Utility actions
     clearError: () => store.clearAllErrors(),
   };
-  
+
   return (
     <SpecificationContext.Provider value={contextValue}>
       {children}
@@ -165,11 +188,13 @@ export const SpecificationProvider: React.FC<SpecificationProviderProps> = ({
 // Hook to use the specification context
 export const useSpecification = (): SpecificationContextValue => {
   const context = useContext(SpecificationContext);
-  
+
   if (!context) {
-    throw new Error('useSpecification must be used within a SpecificationProvider');
+    throw new Error(
+      'useSpecification must be used within a SpecificationProvider'
+    );
   }
-  
+
   return context;
 };
 
@@ -184,7 +209,7 @@ export const useSpecificationProject = () => {
     error,
     clearError,
   } = useSpecification();
-  
+
   return {
     project: currentProject,
     createProject,
@@ -207,7 +232,7 @@ export const useSpecificationPhase = () => {
     validatePhase,
     isValidating,
   } = useSpecification();
-  
+
   return {
     currentPhase,
     phaseValidation,
@@ -235,7 +260,7 @@ export const useSpecificationDocuments = () => {
     isSaving,
     isValidating,
   } = useSpecification();
-  
+
   return {
     documents,
     updateRequirements,
@@ -261,9 +286,9 @@ export const useSpecificationAutoSave = () => {
     lastSaved,
     isSaving,
   } = useSpecification();
-  
+
   const store = useSpecificationStore();
-  
+
   return {
     autoSaveEnabled: store.autoSave.enabled,
     autoSaveConfig: store.autoSave,
@@ -285,9 +310,9 @@ export const useSpecificationValidation = () => {
     validateAllDocuments,
     isValidating,
   } = useSpecification();
-  
+
   const store = useSpecificationStore();
-  
+
   return {
     phaseValidation,
     validatePhase,
@@ -302,7 +327,7 @@ export const useSpecificationValidation = () => {
 export const useSpecificationError = () => {
   const { error, clearError } = useSpecification();
   const store = useSpecificationStore();
-  
+
   return {
     error,
     errors: store.errors,

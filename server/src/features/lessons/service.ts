@@ -9,7 +9,7 @@ export class LessonsService {
     difficulty?: string;
     category?: string;
   }) {
-    const { page, limit, difficulty, category } = options;
+    const { page, limit, difficulty } = options;
     const skip = (page - 1) * limit;
 
     const where: any = {};
@@ -59,15 +59,18 @@ export class LessonsService {
     });
   }
 
-  async updateLesson(id: string, lessonData: Partial<{
-    title: string;
-    description: string;
-    content: string;
-    difficulty: string;
-    trackId: string;
-    estimatedTime: number;
-    slug: string;
-  }>) {
+  async updateLesson(
+    id: string,
+    lessonData: Partial<{
+      title: string;
+      description: string;
+      content: string;
+      difficulty: string;
+      trackId: string;
+      estimatedTime: number;
+      slug: string;
+    }>
+  ) {
     try {
       const updateData: any = { ...lessonData };
       if (lessonData.difficulty) {
@@ -92,10 +95,13 @@ export class LessonsService {
     }
   }
 
-  async getLessonsByTrack(trackId: string, options: {
-    page: number;
-    limit: number;
-  }) {
+  async getLessonsByTrack(
+    trackId: string,
+    options: {
+      page: number;
+      limit: number;
+    }
+  ) {
     const { page, limit } = options;
     const skip = (page - 1) * limit;
 

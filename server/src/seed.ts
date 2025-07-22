@@ -11,7 +11,7 @@ async function seed() {
   await db.lesson.deleteMany({});
   await db.track.deleteMany({});
   await db.user.deleteMany({});
-  
+
   console.log('🧹 Cleared existing data');
 
   // Create sample users
@@ -26,7 +26,7 @@ async function seed() {
     },
   });
 
-  const instructorUser = await db.user.create({
+  await db.user.create({
     data: {
       email: 'instructor@example.com',
       username: 'instructor1',
@@ -43,7 +43,8 @@ async function seed() {
   const webDevelopmentTrack = await db.track.create({
     data: {
       title: 'Web Development Fundamentals',
-      description: 'Master the fundamentals of web development with HTML, CSS, and JavaScript.',
+      description:
+        'Master the fundamentals of web development with HTML, CSS, and JavaScript.',
       slug: 'web-development-fundamentals',
       difficulty: 'BEGINNER',
       tags: ['HTML', 'CSS', 'JavaScript', 'Web Development'],
@@ -209,7 +210,7 @@ for (let i = 0; i < 10; i++) {
   });
 
   // Create sample lesson for React track
-  const reactLesson = await db.lesson.create({
+  await db.lesson.create({
     data: {
       title: 'React Components',
       description: 'Learn to build reusable React components.',
@@ -330,23 +331,23 @@ for i in range(5):
         {
           description: 'Has DOCTYPE declaration',
           expected: true,
-          test: 'document.doctype !== null'
+          test: 'document.doctype !== null',
         },
         {
           description: 'Has title element',
           expected: true,
-          test: 'document.querySelector("title") !== null'
+          test: 'document.querySelector("title") !== null',
         },
         {
           description: 'Has h1 element',
           expected: true,
-          test: 'document.querySelector("h1") !== null'
+          test: 'document.querySelector("h1") !== null',
         },
         {
           description: 'Has paragraph element',
           expected: true,
-          test: 'document.querySelector("p") !== null'
-        }
+          test: 'document.querySelector("p") !== null',
+        },
       ],
       difficulty: 'BEGINNER',
       language: 'JAVASCRIPT',
@@ -354,7 +355,7 @@ for i in range(5):
       hints: [
         'Remember to include the DOCTYPE declaration at the top',
         'The title goes in the head section',
-        'Use semantic HTML elements for better structure'
+        'Use semantic HTML elements for better structure',
       ],
       lessonId: htmlLesson.id,
       order: 1,
@@ -362,7 +363,7 @@ for i in range(5):
     },
   });
 
-  const jsChallenge = await db.challenge.create({
+  await db.challenge.create({
     data: {
       title: 'JavaScript Calculator',
       description: 'Build a simple calculator function.',
@@ -396,28 +397,28 @@ for i in range(5):
         {
           description: 'Addition works correctly',
           input: [5, 3, 'add'],
-          expected: 8
+          expected: 8,
         },
         {
           description: 'Subtraction works correctly',
           input: [10, 4, 'subtract'],
-          expected: 6
+          expected: 6,
         },
         {
           description: 'Multiplication works correctly',
           input: [3, 7, 'multiply'],
-          expected: 21
+          expected: 21,
         },
         {
           description: 'Division works correctly',
           input: [15, 3, 'divide'],
-          expected: 5
+          expected: 5,
         },
         {
           description: 'Handles division by zero',
           input: [10, 0, 'divide'],
-          expected: 'Error: Division by zero'
-        }
+          expected: 'Error: Division by zero',
+        },
       ],
       difficulty: 'BEGINNER',
       language: 'JAVASCRIPT',
@@ -425,7 +426,7 @@ for i in range(5):
       hints: [
         'Use a switch statement to handle different operations',
         'Check for division by zero before dividing',
-        'Return appropriate error messages for invalid inputs'
+        'Return appropriate error messages for invalid inputs',
       ],
       lessonId: jsLesson.id,
       order: 1,
@@ -433,7 +434,7 @@ for i in range(5):
     },
   });
 
-  const pythonChallenge = await db.challenge.create({
+  await db.challenge.create({
     data: {
       title: 'Python List Operations',
       description: 'Practice working with Python lists.',
@@ -467,18 +468,18 @@ for i in range(5):
         {
           description: 'Works with positive numbers',
           input: [[1, 2, 3, 4, 5]],
-          expected: {'sum': 15, 'average': 3.0, 'max': 5, 'min': 1}
+          expected: { sum: 15, average: 3.0, max: 5, min: 1 },
         },
         {
           description: 'Works with negative numbers',
           input: [[-1, -2, -3]],
-          expected: {'sum': -6, 'average': -2.0, 'max': -1, 'min': -3}
+          expected: { sum: -6, average: -2.0, max: -1, min: -3 },
         },
         {
           description: 'Handles empty list',
           input: [[]],
-          expected: {'sum': 0, 'average': 0, 'max': null, 'min': null}
-        }
+          expected: { sum: 0, average: 0, max: null, min: null },
+        },
       ],
       difficulty: 'BEGINNER',
       language: 'PYTHON',
@@ -486,7 +487,7 @@ for i in range(5):
       hints: [
         'Use built-in functions like sum(), max(), min()',
         'Handle the empty list case',
-        'Calculate average by dividing sum by length'
+        'Calculate average by dividing sum by length',
       ],
       lessonId: pythonLesson.id,
       order: 1,
@@ -547,8 +548,8 @@ for i in range(5):
           { test: 'Has DOCTYPE declaration', passed: true },
           { test: 'Has title element', passed: true },
           { test: 'Has h1 element', passed: true },
-          { test: 'Has paragraph element', passed: false }
-        ]
+          { test: 'Has paragraph element', passed: false },
+        ],
       },
     },
   });
@@ -564,34 +565,36 @@ for i in range(5):
         role: 'USER',
         context: {
           lessonId: cssLesson.id,
-          topic: 'CSS Selectors'
+          topic: 'CSS Selectors',
         },
       },
       {
         userId: studentUser.id,
-        message: 'CSS selectors are patterns used to select elements you want to style. There are several types: element selectors (like `p`), class selectors (like `.my-class`), and ID selectors (like `#my-id`). Would you like me to explain any specific type?',
+        message:
+          'CSS selectors are patterns used to select elements you want to style. There are several types: element selectors (like `p`), class selectors (like `.my-class`), and ID selectors (like `#my-id`). Would you like me to explain any specific type?',
         role: 'ASSISTANT',
         context: {
           lessonId: cssLesson.id,
-          topic: 'CSS Selectors'
+          topic: 'CSS Selectors',
         },
       },
       {
         userId: studentUser.id,
-        message: 'What\'s the difference between class and ID selectors?',
+        message: "What's the difference between class and ID selectors?",
         role: 'USER',
         context: {
           lessonId: cssLesson.id,
-          topic: 'CSS Selectors'
+          topic: 'CSS Selectors',
         },
       },
       {
         userId: studentUser.id,
-        message: 'Great question! The main differences are:\n\n1. **Uniqueness**: IDs should be unique (only one element per page), while classes can be used on multiple elements\n2. **Specificity**: ID selectors have higher specificity than class selectors\n3. **Syntax**: IDs use `#` (like `#header`) and classes use `.` (like `.button`)\n\nUse classes for styling multiple elements and IDs for unique elements or JavaScript targeting.',
+        message:
+          'Great question! The main differences are:\n\n1. **Uniqueness**: IDs should be unique (only one element per page), while classes can be used on multiple elements\n2. **Specificity**: ID selectors have higher specificity than class selectors\n3. **Syntax**: IDs use `#` (like `#header`) and classes use `.` (like `.button`)\n\nUse classes for styling multiple elements and IDs for unique elements or JavaScript targeting.',
         role: 'ASSISTANT',
         context: {
           lessonId: cssLesson.id,
-          topic: 'CSS Selectors'
+          topic: 'CSS Selectors',
         },
       },
     ],
@@ -608,13 +611,12 @@ for i in range(5):
   console.log('   📊 Progress records: 2');
   console.log('   💻 Submissions: 1');
   console.log('   💬 Chat messages: 4');
-  
+
   await db.$disconnect();
 }
 
-seed().catch(async (e) => {
+seed().catch(async e => {
   console.error('❌ Seed failed:', e);
   await db.$disconnect();
   process.exit(1);
 });
-

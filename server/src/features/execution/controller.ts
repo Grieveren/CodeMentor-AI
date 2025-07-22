@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { catchAsync, CustomError } from '../../middleware/errorHandler.js';
 import { ExecutionService } from './service.js';
-import logger from '../../config/logger.js';
 
 export class ExecutionController {
   private executionService: ExecutionService;
@@ -18,7 +17,12 @@ export class ExecutionController {
       throw new CustomError('Code is required', 400);
     }
 
-    const result = await this.executionService.executeCode(code, language, input, userId);
+    const result = await this.executionService.executeCode(
+      code,
+      language,
+      input,
+      userId
+    );
 
     res.status(200).json({
       status: 'success',
@@ -34,7 +38,12 @@ export class ExecutionController {
       throw new CustomError('Code and test cases are required', 400);
     }
 
-    const results = await this.executionService.testCode(code, language, testCases, userId);
+    const results = await this.executionService.testCode(
+      code,
+      language,
+      testCases,
+      userId
+    );
 
     res.status(200).json({
       status: 'success',
@@ -50,7 +59,12 @@ export class ExecutionController {
       throw new CustomError('Code and exercise ID are required', 400);
     }
 
-    const validation = await this.executionService.validateSolution(code, exerciseId, language, userId);
+    const validation = await this.executionService.validateSolution(
+      code,
+      exerciseId,
+      language,
+      userId
+    );
 
     res.status(200).json({
       status: 'success',

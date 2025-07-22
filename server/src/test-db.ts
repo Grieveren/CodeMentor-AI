@@ -42,7 +42,7 @@ async function testDatabaseSchema() {
         title: 'Test Lesson',
         description: 'A test lesson',
         slug: 'test-lesson',
-        content: '# Test Lesson\\n\\nThis is a test lesson.',
+        content: '# Test Lesson\n\nThis is a test lesson.',
         trackId: testTrack.id,
         difficulty: 'BEGINNER',
         estimatedTime: 30,
@@ -57,14 +57,14 @@ async function testDatabaseSchema() {
       data: {
         title: 'Test Challenge',
         description: 'A test coding challenge',
-        instructions: 'Write a function that returns \"Hello, World!\"',
-        startingCode: 'function hello() {\\n  // Your code here\\n}',
-        solution: 'function hello() {\\n  return \"Hello, World!\";\\n}',
+        instructions: 'Write a function that returns "Hello, World!"',
+        startingCode: 'function hello() {\n  // Your code here\n}',
+        solution: 'function hello() {\n  return "Hello, World!";\n}',
         testCases: [
           {
             description: 'Returns correct greeting',
             expected: 'Hello, World!',
-            test: 'hello() === \"Hello, World!\"',
+            test: 'hello() === "Hello, World!"',
           },
         ],
         difficulty: 'BEGINNER',
@@ -79,7 +79,7 @@ async function testDatabaseSchema() {
 
     // Test 6: Test progress tracking
     console.log('\n6. Testing progress tracking...');
-    const testProgress = await db.progress.create({
+    await db.progress.create({
       data: {
         userId: testUser.id,
         trackId: testTrack.id,
@@ -97,16 +97,14 @@ async function testDatabaseSchema() {
       data: {
         userId: testUser.id,
         challengeId: testChallenge.id,
-        code: 'function hello() {\\n  return \"Hello, World!\";\\n}',
+        code: 'function hello() {\n  return "Hello, World!";\n}',
         language: 'JAVASCRIPT',
         status: 'COMPLETED',
         score: 100.0,
         testResults: {
           passed: 1,
           total: 1,
-          details: [
-            { test: 'Returns correct greeting', passed: true },
-          ],
+          details: [{ test: 'Returns correct greeting', passed: true }],
         },
       },
     });
@@ -127,7 +125,8 @@ async function testDatabaseSchema() {
         },
         {
           userId: testUser.id,
-          message: 'To write a function in JavaScript, use the `function` keyword followed by the function name and parentheses.',
+          message:
+            'To write a function in JavaScript, use the `function` keyword followed by the function name and parentheses.',
           role: 'ASSISTANT',
           context: {
             lessonId: testLesson.id,
@@ -140,7 +139,7 @@ async function testDatabaseSchema() {
 
     // Test 9: Test complex queries
     console.log('\n9. Testing complex queries...');
-    
+
     // Query user with all related data
     const userWithData = await db.user.findUnique({
       where: { id: testUser.id },
@@ -166,7 +165,7 @@ async function testDatabaseSchema() {
         },
       },
     });
-    
+
     console.log('   ✅ Complex query executed successfully');
     console.log('   📊 User data summary:');
     console.log('       - Progress records:', userWithData?.progress.length);
@@ -220,7 +219,6 @@ async function testDatabaseSchema() {
     console.log('   ✅ Data integrity is maintained');
     console.log('   ✅ Enums are working correctly');
     console.log('   ✅ JSON fields store data properly');
-
   } catch (error) {
     console.error('❌ Database test failed:', error);
     throw error;
@@ -237,7 +235,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       console.log('\n✨ Database schema test completed successfully!');
       process.exit(0);
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('\n💥 Database schema test failed:', error);
       process.exit(1);
     });

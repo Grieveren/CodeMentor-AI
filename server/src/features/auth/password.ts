@@ -17,11 +17,13 @@ export class PasswordService {
     try {
       // Validate password strength first
       this.validatePasswordStrength(password);
-      
+
       const salt = await bcrypt.genSalt(this.saltRounds);
       const hash = await bcrypt.hash(password, salt);
-      
-      logger.info(`Password hashed successfully with ${this.saltRounds} salt rounds`);
+
+      logger.info(
+        `Password hashed successfully with ${this.saltRounds} salt rounds`
+      );
       return hash;
     } catch (error) {
       logger.error('Password hashing failed:', error);
@@ -35,7 +37,9 @@ export class PasswordService {
   async verifyPassword(password: string, hash: string): Promise<boolean> {
     try {
       const isValid = await bcrypt.compare(password, hash);
-      logger.info(`Password verification: ${isValid ? 'successful' : 'failed'}`);
+      logger.info(
+        `Password verification: ${isValid ? 'successful' : 'failed'}`
+      );
       return isValid;
     } catch (error) {
       logger.error('Password verification failed:', error);
@@ -60,13 +64,14 @@ export class PasswordService {
    * Generate a secure random password for password reset
    */
   generateSecurePassword(length: number = 16): string {
-    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    const charset =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
     let password = '';
-    
+
     for (let i = 0; i < length; i++) {
       password += charset.charAt(crypto.randomInt(0, charset.length));
     }
-    
+
     return password;
   }
 
@@ -97,18 +102,28 @@ export class PasswordService {
       throw new Error('Password must contain at least one number');
     }
 
-    if (!/(?=.*[!@#$%^&*(),.?\":{}|<>])/.test(password)) {
+    if (!/(?=.*[!@#$%^&*(),.?":{}|<>])/.test(password)) {
       throw new Error('Password must contain at least one special character');
     }
 
     // Check for common weak passwords
     const commonPasswords = [
-      'password', 'password123', '12345678', 'qwerty', 'abc123',
-      'letmein', 'welcome', 'admin', 'user', 'guest'
+      'password',
+      'password123',
+      '12345678',
+      'qwerty',
+      'abc123',
+      'letmein',
+      'welcome',
+      'admin',
+      'user',
+      'guest',
     ];
 
     if (commonPasswords.includes(password.toLowerCase())) {
-      throw new Error('Password is too common. Please choose a stronger password');
+      throw new Error(
+        'Password is too common. Please choose a stronger password'
+      );
     }
   }
 
@@ -117,22 +132,22 @@ export class PasswordService {
    */
   getPasswordStrength(password: string): number {
     let score = 0;
-    
+
     // Length bonus
     if (password.length >= 8) score += 20;
     if (password.length >= 12) score += 10;
     if (password.length >= 16) score += 10;
-    
+
     // Character variety
     if (/[a-z]/.test(password)) score += 10;
     if (/[A-Z]/.test(password)) score += 10;
     if (/\d/.test(password)) score += 10;
-    if (/[!@#$%^&*(),.?\":{}|<>]/.test(password)) score += 15;
-    
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score += 15;
+
     // Pattern penalties
     if (/(.)\1{2,}/.test(password)) score -= 10; // Repeated characters
     if (/123|abc|qwe/i.test(password)) score -= 10; // Sequential patterns
-    
+
     return Math.max(0, Math.min(100, score));
   }
 }

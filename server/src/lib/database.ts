@@ -1,4 +1,5 @@
 import { PrismaClient } from '../generated/prisma';
+import { logger } from './logger';
 
 // Singleton pattern for Prisma client
 const globalForPrisma = globalThis as unknown as {
@@ -15,9 +16,9 @@ if (process.env.NODE_ENV !== 'production') {
 export const connectDB = async () => {
   try {
     await db.$connect();
-    console.log('✅ Database connected successfully');
+    logger.info('✅ Database connected successfully');
   } catch (error) {
-    console.error('❌ Database connection failed:', error);
+    logger.error('❌ Database connection failed:', error);
     throw error;
   }
 };
@@ -25,7 +26,7 @@ export const connectDB = async () => {
 // Utility function to disconnect from database
 export const disconnectDB = async () => {
   await db.$disconnect();
-  console.log('📡 Database disconnected');
+  logger.info('📡 Database disconnected');
 };
 
 // Health check function
@@ -34,8 +35,11 @@ export const checkDBHealth = async () => {
     await db.$queryRaw`SELECT 1`;
     return { status: 'healthy', timestamp: new Date() };
   } catch (error) {
-    console.error('Database health check failed:', error);
-    return { status: 'unhealthy', error: error instanceof Error ? error.message : 'Unknown error' };
+    logger.error('Database health check failed:', error);
+    return {
+      status: 'unhealthy',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
   }
 };
 

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { catchAsync, CustomError } from '../../middleware/errorHandler.js';
+import { catchAsync } from '../../middleware/errorHandler.js';
 import { ProgressService } from './service.js';
 
 export class ProgressController {

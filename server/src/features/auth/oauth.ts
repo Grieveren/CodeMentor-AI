@@ -3,7 +3,6 @@ import { Strategy as GitHubStrategy } from 'passport-github2';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { AuthService } from './service.js';
 import { jwtService } from './jwt.js';
-import { UserRole } from '../../generated/prisma/index.js';
 import logger from '../../config/logger.js';
 
 const authService = new AuthService();
@@ -19,22 +18,34 @@ export class OAuthConfig {
   private initializeStrategies() {
     // GitHub OAuth Strategy
     if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
-      passport.use(new GitHubStrategy({
-        clientID: process.env.GITHUB_CLIENT_ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: process.env.GITHUB_CALLBACK_URL || '/auth/github/callback',
-        scope: ['user:email']
-      }, this.githubVerify));
+      passport.use(
+        new GitHubStrategy(
+          {
+            clientID: process.env.GITHUB_CLIENT_ID,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET,
+            callbackURL:
+              process.env.GITHUB_CALLBACK_URL || '/auth/github/callback',
+            scope: ['user:email'],
+          },
+          this.githubVerify
+        )
+      );
     }
 
     // Google OAuth Strategy
     if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-      passport.use(new GoogleStrategy({
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_CALLBACK_URL || '/auth/google/callback',
-        scope: ['profile', 'email']
-      }, this.googleVerify));
+      passport.use(
+        new GoogleStrategy(
+          {
+            clientID: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            callbackURL:
+              process.env.GOOGLE_CALLBACK_URL || '/auth/google/callback',
+            scope: ['profile', 'email'],
+          },
+          this.googleVerify
+        )
+      );
     }
 
     // Passport session setup
@@ -65,24 +76,22 @@ export class OAuthConfig {
       const email = profile.emails?.[0]?.value;
       const username = profile.username;
       const name = profile.displayName || profile.username;
-      const avatar = profile.photos?.[0]?.value;
-      const githubUrl = profile.profileUrl;
 
       if (!email) {
         return done(new Error('No email found in GitHub profile'), null);
       }
 
       // Check if user exists
-let user = await authService.findUserByEmail(email);
+      let user = await authService.findUserByEmail(email);
 
-if (!user) {
-  // Create new user
-  user = await authService.createUser({
-    email,
-    name,
-    username: username || email.split('@')[0],
-    password: '', // No password for OAuth users
-  }) as any;
+      if (!user) {
+        // Create new user
+        user = (await authService.createUser({
+          email,
+          name,
+          username: username || email.split('@')[0],
+          password: '', // No password for OAuth users
+        })) as any;
 
         // TODO: Update user profile with GitHub info
         // This would require adding fields to updateUser method
@@ -110,24 +119,22 @@ if (!user) {
     try {
       const email = profile.emails?.[0]?.value;
       const name = profile.displayName;
-      const avatar = profile.photos?.[0]?.value;
-      const googleId = profile.id;
 
       if (!email) {
         return done(new Error('No email found in Google profile'), null);
       }
 
       // Check if user exists
-let user = await authService.findUserByEmail(email);
+      let user = await authService.findUserByEmail(email);
 
-if (!user) {
-  // Create new user
-  user = await authService.createUser({
-    email,
-    name,
-    username: email.split('@')[0],
-    password: '', // No password for OAuth users
-  }) as any;
+      if (!user) {
+        // Create new user
+        user = (await authService.createUser({
+          email,
+          name,
+          username: email.split('@')[0],
+          password: '', // No password for OAuth users
+        })) as any;
 
         // TODO: Update user profile with Google info
         // This would require adding fields to updateUser method
@@ -161,19 +168,30 @@ export class OAuthController {
     try {
       const user = req.user;
       if (!user) {
-        return res.redirect(`${process.env.CLIENT_URL}/auth/error?error=oauth_failed`);
+        return res.redirect(
+          `${process.env.CLIENT_URL}/auth/error?error=oauth_failed`
+        );
       }
 
       // Generate JWT tokens
-      const tokens = jwtService.generateTokenPair(user.id, user.email, user.role);
+      const tokens = jwtService.generateTokenPair(
+        user.id,
+        user.email,
+        user.role
+      );
 
       // Store refresh token
       const refreshTokenHash = jwtService.generateRefreshTokenHash();
       const refreshTokenExpiry = jwtService.getRefreshTokenExpiry();
-      await this.authService.storeRefreshToken(user.id, refreshTokenHash, refreshTokenExpiry);
+      await this.authService.storeRefreshToken(
+        user.id,
+        refreshTokenHash,
+        refreshTokenExpiry
+      );
 
       // Redirect to client with tokens
-      const redirectUrl = `${process.env.CLIENT_URL}/auth/callback?` +
+      const redirectUrl =
+        `${process.env.CLIENT_URL}/auth/callback?` +
         `access_token=${tokens.accessToken}&` +
         `refresh_token=${tokens.refreshToken}&` +
         `expires_in=${tokens.expiresIn}`;
@@ -181,7 +199,9 @@ export class OAuthController {
       res.redirect(redirectUrl);
     } catch (error) {
       logger.error('GitHub OAuth callback error:', error);
-      res.redirect(`${process.env.CLIENT_URL}/auth/error?error=oauth_callback_failed`);
+      res.redirect(
+        `${process.env.CLIENT_URL}/auth/error?error=oauth_callback_failed`
+      );
     }
   };
 
@@ -192,19 +212,30 @@ export class OAuthController {
     try {
       const user = req.user;
       if (!user) {
-        return res.redirect(`${process.env.CLIENT_URL}/auth/error?error=oauth_failed`);
+        return res.redirect(
+          `${process.env.CLIENT_URL}/auth/error?error=oauth_failed`
+        );
       }
 
       // Generate JWT tokens
-      const tokens = jwtService.generateTokenPair(user.id, user.email, user.role);
+      const tokens = jwtService.generateTokenPair(
+        user.id,
+        user.email,
+        user.role
+      );
 
       // Store refresh token
       const refreshTokenHash = jwtService.generateRefreshTokenHash();
       const refreshTokenExpiry = jwtService.getRefreshTokenExpiry();
-      await this.authService.storeRefreshToken(user.id, refreshTokenHash, refreshTokenExpiry);
+      await this.authService.storeRefreshToken(
+        user.id,
+        refreshTokenHash,
+        refreshTokenExpiry
+      );
 
       // Redirect to client with tokens
-      const redirectUrl = `${process.env.CLIENT_URL}/auth/callback?` +
+      const redirectUrl =
+        `${process.env.CLIENT_URL}/auth/callback?` +
         `access_token=${tokens.accessToken}&` +
         `refresh_token=${tokens.refreshToken}&` +
         `expires_in=${tokens.expiresIn}`;
@@ -212,7 +243,9 @@ export class OAuthController {
       res.redirect(redirectUrl);
     } catch (error) {
       logger.error('Google OAuth callback error:', error);
-      res.redirect(`${process.env.CLIENT_URL}/auth/error?error=oauth_callback_failed`);
+      res.redirect(
+        `${process.env.CLIENT_URL}/auth/error?error=oauth_callback_failed`
+      );
     }
   };
 }

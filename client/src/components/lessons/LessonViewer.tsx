@@ -3,8 +3,8 @@ import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { 
-  ChevronLeftIcon, 
+import {
+  ChevronLeftIcon,
   ChevronRightIcon,
   ClockIcon,
   BookOpenIcon,
@@ -12,7 +12,7 @@ import {
   PlayCircleIcon,
   PauseCircleIcon,
   TagIcon,
-  ArrowLeftIcon
+  ArrowLeftIcon,
 } from '@heroicons/react/24/outline';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
@@ -65,7 +65,9 @@ const LessonProgress: React.FC<LessonProgressProps> = ({
   };
 
   const handleComplete = () => {
-    const timeSpent = startTime ? Math.floor((Date.now() - startTime.getTime()) / 1000 / 60) : 0;
+    const timeSpent = startTime
+      ? Math.floor((Date.now() - startTime.getTime()) / 1000 / 60)
+      : 0;
     setCurrentProgress(100);
     setIsActive(false);
     onComplete();
@@ -83,7 +85,9 @@ const LessonProgress: React.FC<LessonProgressProps> = ({
     }
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+    return remainingMinutes > 0
+      ? `${hours}h ${remainingMinutes}m`
+      : `${hours}h`;
   };
 
   return (
@@ -100,7 +104,7 @@ const LessonProgress: React.FC<LessonProgressProps> = ({
               <span className="capitalize">{lesson.category}</span>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {!isStarted && !isCompleted && (
               <Button
@@ -112,7 +116,7 @@ const LessonProgress: React.FC<LessonProgressProps> = ({
                 Start Lesson
               </Button>
             )}
-            
+
             {isStarted && !isCompleted && (
               <Button
                 variant="success"
@@ -123,7 +127,7 @@ const LessonProgress: React.FC<LessonProgressProps> = ({
                 Mark Complete
               </Button>
             )}
-            
+
             {isCompleted && (
               <Badge variant="success" size="lg">
                 <CheckCircleIcon className="h-4 w-4 mr-1" />
@@ -141,7 +145,7 @@ const LessonProgress: React.FC<LessonProgressProps> = ({
               <span>{Math.round(currentProgress)}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
+              <div
                 className="bg-primary-600 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${currentProgress}%` }}
               />
@@ -153,12 +157,14 @@ const LessonProgress: React.FC<LessonProgressProps> = ({
         {isStarted && !isCompleted && (
           <div className="flex items-center gap-2 text-sm">
             <span className="text-gray-600">Update progress:</span>
-            {[25, 50, 75, 100].map((value) => (
+            {[25, 50, 75, 100].map(value => (
               <Button
                 key={value}
                 variant="ghost"
                 size="sm"
-                onClick={() => value === 100 ? handleComplete() : handleProgressUpdate(value)}
+                onClick={() =>
+                  value === 100 ? handleComplete() : handleProgressUpdate(value)
+                }
                 disabled={currentProgress >= value}
               >
                 {value}%
@@ -221,18 +227,22 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
 
   if (error || !lesson) {
     return (
-      <div className={cn('flex flex-col items-center justify-center py-12', className)}>
+      <div
+        className={cn(
+          'flex flex-col items-center justify-center py-12',
+          className
+        )}
+      >
         <BookOpenIcon className="h-12 w-12 text-gray-400 mb-4" />
         <h3 className="text-lg font-medium text-gray-900 mb-2">
           {error || 'Lesson not found'}
         </h3>
         <p className="text-gray-600 text-center mb-4">
-          The lesson you're looking for doesn't exist or couldn't be loaded.
+          The lesson you&apos;re looking for doesn&apos;t exist or couldn&apos;t
+          be loaded.
         </p>
         <Link to="/lessons">
-          <Button variant="primary">
-            Browse Lessons
-          </Button>
+          <Button variant="primary">Browse Lessons</Button>
         </Link>
       </div>
     );
@@ -244,14 +254,21 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
       <div className="mb-6">
         <div className="flex items-center gap-4 mb-4">
           <Link to="/lessons">
-            <Button variant="ghost" size="sm" leftIcon={<ArrowLeftIcon className="h-4 w-4" />}>
+            <Button
+              variant="ghost"
+              size="sm"
+              leftIcon={<ArrowLeftIcon className="h-4 w-4" />}
+            >
               Back to Lessons
             </Button>
           </Link>
-          
+
           {track && (
             <div className="text-sm text-gray-600">
-              <Link to={`/tracks/${track.id}`} className="hover:text-primary-600">
+              <Link
+                to={`/tracks/${track.id}`}
+                className="hover:text-primary-600"
+              >
                 {track.title}
               </Link>
             </div>
@@ -262,17 +279,15 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
           {lesson.title}
         </h1>
 
-        <p className="text-lg text-gray-600 mb-6">
-          {lesson.description}
-        </p>
+        <p className="text-lg text-gray-600 mb-6">{lesson.description}</p>
 
         {/* Tags and Difficulty */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex flex-wrap gap-2">
-            {lesson.tags.map((tag) => (
-              <Badge 
-                key={tag} 
-                variant="outline" 
+            {lesson.tags.map(tag => (
+              <Badge
+                key={tag}
+                variant="outline"
                 size="sm"
                 icon={<TagIcon className="h-3 w-3" />}
               >
@@ -280,13 +295,17 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
               </Badge>
             ))}
           </div>
-          <Badge 
+          <Badge
             variant={
-              lesson.difficulty === 'beginner' ? 'success' :
-              lesson.difficulty === 'intermediate' ? 'warning' : 'error'
+              lesson.difficulty === 'beginner'
+                ? 'success'
+                : lesson.difficulty === 'intermediate'
+                  ? 'warning'
+                  : 'error'
             }
           >
-            {lesson.difficulty.charAt(0).toUpperCase() + lesson.difficulty.slice(1)}
+            {lesson.difficulty.charAt(0).toUpperCase() +
+              lesson.difficulty.slice(1)}
           </Badge>
         </div>
       </div>
@@ -323,7 +342,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
       {lesson.learningOutcomes && lesson.learningOutcomes.length > 0 && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="text-lg">What You'll Learn</CardTitle>
+            <CardTitle className="text-lg">What You&apos;ll Learn</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc list-inside space-y-1 text-gray-600">
@@ -375,7 +394,10 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
                       </pre>
                     </div>
                   ) : (
-                    <code className="bg-gray-100 text-gray-900 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+                    <code
+                      className="bg-gray-100 text-gray-900 px-1.5 py-0.5 rounded text-sm font-mono"
+                      {...props}
+                    >
                       {children}
                     </code>
                   );

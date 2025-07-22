@@ -1,0 +1,27 @@
+# Development and utility files
+src/seed.ts
+src/check-data.ts
+src/test-*.ts
+src/validate-setup.ts
+src/lib/migrate.ts
+
+# Build output
+dist/
+build/
+
+# Dependencies
+node_modules/
+
+# Coverage
+coverage/
+
+# Environment files
+.env*
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/

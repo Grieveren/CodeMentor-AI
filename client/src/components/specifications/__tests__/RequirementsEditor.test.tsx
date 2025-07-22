@@ -15,7 +15,7 @@ jest.mock('@monaco-editor/react', () => {
         };
         props.onMount(mockEditor);
       }
-    }, [props.onMount]);
+    }, [props]);
 
     return React.createElement('textarea', {
       'data-testid': 'monaco-editor',

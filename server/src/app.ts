@@ -17,25 +17,24 @@ import progressRoutes from './features/progress/routes.js';
 import aiRoutes from './features/ai/routes.js';
 import executionRoutes from './features/execution/routes.js';
 
-// Import OAuth configuration
-import { oauthConfig } from './features/auth/oauth.js';
-
 // Load environment variables
 dotenv.config();
 
 const app = express();
 
 // Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+      },
     },
-  },
-}));
+  })
+);
 
 // CORS configuration
 app.use(
@@ -52,16 +51,18 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Session middleware (required for OAuth)
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-session-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  },
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'your-session-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
 
 // Passport middleware
 app.use(passport.initialize());
@@ -75,8 +76,8 @@ app.use((req, res, next) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
@@ -92,7 +93,7 @@ app.use('/api/execution', executionRoutes);
 
 // API status endpoint
 app.get('/api', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'CodeMentor AI API',
     version: '1.0.0',
     endpoints: {
@@ -107,7 +108,7 @@ app.get('/api', (req, res) => {
 
 // 404 handler for API routes
 app.use('/api/*', (req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     status: 'error',
     message: 'API route not found',
     path: req.originalUrl,
@@ -119,7 +120,7 @@ app.use(globalErrorHandler);
 
 // 404 handler for non-API routes
 app.use('*', (req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     status: 'error',
     message: 'Route not found',
     path: req.originalUrl,

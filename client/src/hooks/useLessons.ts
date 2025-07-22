@@ -28,119 +28,107 @@ export const useLessons = () => {
   // Memoized actions
   const fetchLessons = useCallback(
     (params?: LessonQueryParams) => store.fetchLessons(params),
-    [store.fetchLessons]
+    [store]
   );
 
   const fetchLessonById = useCallback(
     (id: string) => store.fetchLessonById(id),
-    [store.fetchLessonById]
+    [store]
   );
 
   const setCurrentLesson = useCallback(
     (lesson: Lesson | null) => store.setCurrentLesson(lesson),
-    [store.setCurrentLesson]
+    [store]
   );
 
   const searchLessons = useCallback(
     (query: string) => store.searchLessons(query),
-    [store.searchLessons]
+    [store]
   );
 
   const fetchTracks = useCallback(
     (params?: { category?: string; difficulty?: string; search?: string }) =>
       store.fetchTracks(params),
-    [store.fetchTracks]
+    [store]
   );
 
   const fetchTrackById = useCallback(
     (id: string) => store.fetchTrackById(id),
-    [store.fetchTrackById]
+    [store]
   );
 
   const setCurrentTrack = useCallback(
     (track: Track | null) => store.setCurrentTrack(track),
-    [store.setCurrentTrack]
+    [store]
   );
 
-  const fetchCategories = useCallback(
-    () => store.fetchCategories(),
-    [store.fetchCategories]
-  );
+  const fetchCategories = useCallback(() => store.fetchCategories(), [store]);
 
   const setFilters = useCallback(
     (newFilters: Parameters<typeof store.setFilters>[0]) =>
       store.setFilters(newFilters),
-    [store.setFilters]
+    [store]
   );
 
-  const clearFilters = useCallback(
-    () => store.clearFilters(),
-    [store.clearFilters]
-  );
+  const clearFilters = useCallback(() => store.clearFilters(), [store]);
 
-  const setPage = useCallback(
-    (page: number) => store.setPage(page),
-    [store.setPage]
-  );
+  const setPage = useCallback((page: number) => store.setPage(page), [store]);
 
   const startLesson = useCallback(
     (lessonId: string) => store.startLesson(lessonId),
-    [store.startLesson]
+    [store]
   );
 
   const completeLesson = useCallback(
     (lessonId: string, timeSpent?: number) =>
       store.completeLesson(lessonId, timeSpent),
-    [store.completeLesson]
+    [store]
   );
 
   const updateLessonProgress = useCallback(
     (lessonId: string, progress: number) =>
       store.updateLessonProgress(lessonId, progress),
-    [store.updateLessonProgress]
+    [store]
   );
 
   const getNextLesson = useCallback(
     (currentLessonId: string, trackId?: string) =>
       store.getNextLesson(currentLessonId, trackId),
-    [store.getNextLesson]
+    [store]
   );
 
   const getPreviousLesson = useCallback(
     (currentLessonId: string, trackId?: string) =>
       store.getPreviousLesson(currentLessonId, trackId),
-    [store.getPreviousLesson]
+    [store]
   );
 
   const clearError = useCallback(
     (key: Parameters<typeof store.clearError>[0]) => store.clearError(key),
-    [store.clearError]
+    [store]
   );
 
-  const clearAllErrors = useCallback(
-    () => store.clearAllErrors(),
-    [store.clearAllErrors]
-  );
+  const clearAllErrors = useCallback(() => store.clearAllErrors(), [store]);
 
   // Special collections fetchers
   const fetchFeaturedLessons = useCallback(
     (limit?: number) => store.fetchFeaturedLessons(limit),
-    [store.fetchFeaturedLessons]
+    [store]
   );
 
   const fetchRecommendedLessons = useCallback(
     (limit?: number) => store.fetchRecommendedLessons(limit),
-    [store.fetchRecommendedLessons]
+    [store]
   );
 
   const fetchRecentLessons = useCallback(
     (limit?: number) => store.fetchRecentLessons(limit),
-    [store.fetchRecentLessons]
+    [store]
   );
 
   const fetchPopularLessons = useCallback(
     (limit?: number) => store.fetchPopularLessons(limit),
-    [store.fetchPopularLessons]
+    [store]
   );
 
   return {
@@ -215,7 +203,7 @@ export const useLessonBrowser = () => {
   // Auto-fetch lessons when filters or pagination change
   useEffect(() => {
     fetchLessons();
-  }, [filters, pagination.page, pagination.limit]);
+  }, [filters, pagination.page, pagination.limit, fetchLessons]);
 
   const handleFilterChange = useCallback(
     (newFilters: Parameters<typeof setFilters>[0]) => {

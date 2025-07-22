@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole } from '../../generated/prisma/index.js';
+import { PrismaClient } from '../../generated/prisma/index.js';
 
 const prisma = new PrismaClient();
 
@@ -41,8 +41,8 @@ export class AuthService {
       where: {
         refreshToken,
         refreshTokenExpiry: {
-          gt: new Date()
-        }
+          gt: new Date(),
+        },
       },
       select: {
         id: true,
@@ -82,11 +82,14 @@ export class AuthService {
     });
   }
 
-  async updateUser(id: string, userData: Partial<{
-    email: string;
-    name: string;
-    password: string;
-  }>) {
+  async updateUser(
+    id: string,
+    userData: Partial<{
+      email: string;
+      name: string;
+      password: string;
+    }>
+  ) {
     return await prisma.user.update({
       where: { id },
       data: userData,
@@ -100,7 +103,11 @@ export class AuthService {
     });
   }
 
-  async storeRefreshToken(userId: string, refreshToken: string, expiresAt: Date) {
+  async storeRefreshToken(
+    userId: string,
+    refreshToken: string,
+    expiresAt: Date
+  ) {
     return await prisma.user.update({
       where: { id: userId },
       data: {

@@ -44,7 +44,11 @@ export class AuthController {
     // Store refresh token in database
     const refreshTokenHash = jwtService.generateRefreshTokenHash();
     const refreshTokenExpiry = jwtService.getRefreshTokenExpiry();
-    await this.authService.storeRefreshToken(user.id, refreshTokenHash, refreshTokenExpiry);
+    await this.authService.storeRefreshToken(
+      user.id,
+      refreshTokenHash,
+      refreshTokenExpiry
+    );
 
     logger.info(`User registered successfully: ${email}`);
 
@@ -81,7 +85,10 @@ export class AuthController {
     }
 
     // Check password with enhanced security
-    const isPasswordValid = await passwordService.verifyPassword(password, user.passwordHash || '');
+    const isPasswordValid = await passwordService.verifyPassword(
+      password,
+      user.passwordHash || ''
+    );
     if (!isPasswordValid) {
       throw new CustomError('Invalid email or password', 401);
     }
@@ -89,7 +96,9 @@ export class AuthController {
     // Check if password needs rehashing
     if (passwordService.needsRehash(user.passwordHash || '')) {
       const newHashedPassword = await passwordService.hashPassword(password);
-      await this.authService.updateUser(user.id, { password: newHashedPassword });
+      await this.authService.updateUser(user.id, {
+        password: newHashedPassword,
+      });
       logger.info(`Password rehashed for user: ${email}`);
     }
 
@@ -99,7 +108,11 @@ export class AuthController {
     // Store refresh token in database
     const refreshTokenHash = jwtService.generateRefreshTokenHash();
     const refreshTokenExpiry = jwtService.getRefreshTokenExpiry();
-    await this.authService.storeRefreshToken(user.id, refreshTokenHash, refreshTokenExpiry);
+    await this.authService.storeRefreshToken(
+      user.id,
+      refreshTokenHash,
+      refreshTokenExpiry
+    );
 
     logger.info(`User logged in successfully: ${email}`);
 
@@ -147,7 +160,7 @@ export class AuthController {
     }
 
     // Verify refresh token
-    const payload = jwtService.verifyRefreshToken(refreshToken);
+    jwtService.verifyRefreshToken(refreshToken);
 
     // Find user by refresh token
     const user = await this.authService.findUserByRefreshToken(refreshToken);
@@ -161,7 +174,11 @@ export class AuthController {
     // Store new refresh token
     const newRefreshTokenHash = jwtService.generateRefreshTokenHash();
     const refreshTokenExpiry = jwtService.getRefreshTokenExpiry();
-    await this.authService.storeRefreshToken(user.id, newRefreshTokenHash, refreshTokenExpiry);
+    await this.authService.storeRefreshToken(
+      user.id,
+      newRefreshTokenHash,
+      refreshTokenExpiry
+    );
 
     logger.info(`Token refreshed for user: ${user.email}`);
 
